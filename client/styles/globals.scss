@@ -1,0 +1,49 @@
+@import './_fonts.scss';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  //font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  //  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Nunito-Regular";
+  background-color: antiquewhite;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container{
+  max-width: 1420px;
+  margin: 0 auto;
+}
+
+.vh{
+  height: 100vh;
+}
+
+.flex{
+  display: flex;
+}
+
+.flex-column{
+  flex-direction: column;
+}
+
+.align-center{
+  align-items: center;
+}
+
+.justify-space-between{
+  justify-content: space-between;
+}
+
+.flex-grow{
+  flex-grow: 1;
+}
