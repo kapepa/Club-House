@@ -4,9 +4,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  //font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-  //  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  font-family: "Nunito-Regular";
+  font-family: "Nunito-Regular", sans-serif;
   background-color: antiquewhite;
 }
 
@@ -19,13 +17,24 @@ a {
   box-sizing: border-box;
 }
 
+h1,h2,h3,h4,h5,h6{
+  margin: 0;
+  padding: 0;
+}
+
 .container{
   max-width: 1420px;
+  width: 100%;
   margin: 0 auto;
+  position: relative;
 }
 
 .vh{
   height: 100vh;
+}
+
+.h100{
+  height: 100%;
 }
 
 .flex{
@@ -40,8 +49,20 @@ a {
   align-items: center;
 }
 
+.content-center{
+  justify-content: center;
+}
+
 .justify-space-between{
   justify-content: space-between;
+}
+
+.justify-center{
+  justify-content: center;
+}
+
+.flex-wrap{
+  flex-wrap: wrap;
 }
 
 .flex-grow{

@@ -4,7 +4,7 @@ import style from "./footer.module.scss"
 const Index: FC = () => {
   return (
     <footer className={`container ${style.footer}`}>
-      202..
+      2021
     </footer>
   )
 }

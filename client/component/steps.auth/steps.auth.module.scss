@@ -1,0 +1,105 @@
+.steps{
+  &__frame{
+    box-shadow: 0px 0px 8px 0px rgba(34, 60, 80, 0.2);
+    padding: 25px 25px 20px 25px;
+    border-radius: 15px;
+    min-width: 320px;
+    max-width: 430px;
+    position: relative;
+  }
+  &__h3{
+    text-align: center;
+    font-family: "Nunito-Bold", sans-serif;
+    display: inline-block;
+    position: relative;
+    font-size: 16px;
+    &::before{
+      content: "";
+      position: absolute;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      left: 50%;
+      bottom: 100%;
+      transform: translateX(-50%);
+    }
+  }
+  &__welcome{
+    padding-left: 30px;
+    font-size: 20px;
+    &::before{
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-image: url("../../public/svg/Clubhouse.svg");
+    }
+  }
+  &__import{
+    &::before{
+      background-image: url("../../public/svg/Fork.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
+  &__people{
+    &::before{
+      background-image: url("../../public/svg/Man.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
+  &__photo{
+    &::before{
+      background-image: url("../../public/svg/Candy.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
+  &__phone{
+    &::before{
+      background-image: url("../../public/svg/Phone.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
+  &__code{
+    &::before{
+      background-image: url("../../public/svg/Code.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
+  &__cap{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    padding: 7px 10px;
+  }
+  &__content{
+    padding: 10px 0 15px;
+  }
+  &__area{
+    padding-bottom: 10px;
+  }
+  &__basement{
+    padding-top: 5px;
+  }
+  &__span{
+    font-size: 14px;
+    text-align: center;
+    display: block;
+  }
+  &__anchor{
+    font-size: 12px;
+    padding: 0 3px;
+  }
+  &__input_number{
+    padding: 5px 7px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #000;
+    font-size: 15px;
+    width: 50px;
+    text-align: center;
+  }
+}
