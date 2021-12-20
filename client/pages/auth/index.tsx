@@ -1,8 +1,12 @@
 import {NextPage} from "next";
+import BaseWrapper from "../../layout/base.wrapper";
+import StepsAuth from "../../component/steps.auth";
 
 const Auth: NextPage = () => {
   return (
-    <div>Auth</div>
+    <BaseWrapper title="Auth" description="Auth description">
+      <StepsAuth />
+    </BaseWrapper>
   )
 };
 

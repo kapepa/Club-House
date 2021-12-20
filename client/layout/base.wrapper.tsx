@@ -15,16 +15,14 @@ const BaseWrapper: FC<IBaseWrapper> = ({children, title, description}) => {
         <title>{title}</title>
         <meta name="description" content={description} />
       </Head>
-      <div className="flex flex-column vh">
-        <main className="flex-grow">
-          <div className="container">
+      <div className="container">
+        <div className="flex flex-column vh">
+          <main className="flex flex-column flex-grow">
             <NavUser/>
-          </div>
-          <div className="container">
             {children}
-          </div>
-        </main>
-        <Footer/>
+          </main>
+          <Footer/>
+        </div>
       </div>
     </>
   )
