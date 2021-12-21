@@ -1,21 +1,27 @@
-import React, {FC} from "react";
+import React, {FC, useState} from "react";
 import style from "./steps.auth.module.scss";;
 import Button from "../button";
 import Input from "../input";
+import Regexp from "../../helpers/regexp";
 
 interface IPeople {
-  callback(e: React.MouseEvent<HTMLButtonElement>): void;
+  callback(data: {next: boolean, name?: string}): void;
 }
 
 const People: FC<IPeople> = ({callback}) => {
+  const [name, setName] = useState<string>('')
 
   const NextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    callback(e)
+    callback({next: true})
   }
 
   const InputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
+    const value = e.target.value
+    setName(value);
+    callback({next: false, name: value})
   }
+
+  const ValidName = (name: string): boolean => Regexp.name.test(name);
 
   return (
     <>
@@ -32,7 +38,7 @@ const People: FC<IPeople> = ({callback}) => {
         <Input callback={InputChange} name="name" type="text" placeholder="Your Name"/>
       </div>
       <div className="flex justify-center">
-        <Button name="Next" callback={NextClick}/>
+        <Button name="Next" callback={NextClick} disabled={ValidName(name) ? false : true}/>
       </div>
     </>
   )

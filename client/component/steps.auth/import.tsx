@@ -5,16 +5,16 @@ import Link from "next/link";
 import Avatar from "../avatar";
 
 interface IImport {
-  callback(e: React.MouseEvent<HTMLButtonElement>): void;
+  callback(data: {next: boolean}): void;
 }
 
 const Import: FC<IImport> = ({callback}) => {
 
-  const ImportClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    callback(e)
+  const ImportClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    callback({next: true});
   }
 
-  const AvatarClick = (e: React.MouseEvent<HTMLImageElement>) => {
+  const AvatarClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
     console.log(e.target)
   }
 
@@ -27,12 +27,10 @@ const Import: FC<IImport> = ({callback}) => {
         <Avatar callback={AvatarClick} size={60}/>
       </div>
       <div className="flex justify-center">
-        <Button name="Import from GitHub" callback={ImportClick}/>
+        <Button name="Import from GitHub" callback={AvatarClick}/>
       </div>
       <div className={`flex justify-center ${style.steps__basement}`}>
-        <Link href="/myinfo">
-          <a className={`${style.steps__anchor}`}>Enter my info manually</a>
-        </Link>
+        <a onClick={ImportClick} className={`${style.steps__anchor}`}>Enter my info manually</a>
       </div>
     </>
   )

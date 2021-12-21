@@ -3,10 +3,14 @@ import style from "./steps.auth.module.scss";
 import Button from "../button";
 import Link from "next/link";
 
-const Code: FC = () => {
+interface ICode {
+  callback(e: React.MouseEvent<HTMLButtonElement>): void,
+}
+
+const Code: FC<ICode> = ({callback}) => {
 
   const ActiveClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.target)
+    callback(e)
   }
 
   const ChangeNumber = (e: React.ChangeEvent<HTMLInputElement>) => {

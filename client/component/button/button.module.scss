@@ -11,4 +11,7 @@
   &:hover{
     background-color: #4578b3;
   }
+  &__disabled{
+    background-color: gray;
+  }
 }

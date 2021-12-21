@@ -92,6 +92,7 @@
   &__anchor{
     font-size: 12px;
     padding: 0 3px;
+    cursor: pointer;
   }
   &__input_number{
     padding: 5px 7px;
@@ -101,5 +102,8 @@
     font-size: 15px;
     width: 50px;
     text-align: center;
+  }
+  &__avatar_file{
+    display: none;
   }
 }
