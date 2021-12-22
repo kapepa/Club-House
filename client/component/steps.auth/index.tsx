@@ -8,43 +8,49 @@ import Phone from "./phone";
 import Code from "./code";
 
 interface IState {
+  step: number;
   welcome: boolean;
   name: string | null;
-  avatar: string | undefined | File,
+  avatar: string | undefined | File;
+  phone: string | undefined;
 }
 
 const StepsAuth: FC = () => {
-  const [step, setStep] = useState<number>(4);
   const [state, setState] = useState<IState>({
+    step: 5,
     welcome: false,
     name: null,
     avatar: undefined,
+    phone: undefined
   })
 
-  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(1)
-  const ImportCallback = (data: {next: boolean}) =>{
-    if(data.next) setStep(2)
+  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1});
+  const ImportCallback = (data: {next: boolean}) => {
+    if(data.next) setState({...state, step: 2});
   }
   const PeopleCallback = (data: {next: boolean, name?: string}) => {
     if(data.name) setState({...state, name: data.name});
-    if(data.next) setStep(3);
+    if(data.next) setState({...state, step: 3});
   }
   const PhotoCallback = (data: {next: boolean, avatar?: File | string | undefined}) => {
     if(data.avatar) setState({...state, avatar: data.avatar});
-    if(data.next) setStep(4);
+    if(data.next) setState({...state, step: 4});
   }
-  const PhoneCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(5)
+  const PhoneCallback = (data: {next: boolean, phone?: string}) => {
+    if(data.phone)  setState({...state, avatar: data.phone});
+    if(data.next) setState({...state, step: 5});
+  }
   const CodeCallback = (e: React.MouseEvent<HTMLButtonElement>) => {console.log(e.target)}
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow`}>
       <div className={`flex justify-center flex-column ${style.steps__frame}`}>
-        {step === 0 && <Welcome callback={WelcomeCallback} />}
-        {step === 1 && <Import callback={ImportCallback}/>}
-        {step === 2 && <People callback={PeopleCallback}/>}
-        {step === 3 && <Photo callback={PhotoCallback}/>}
-        {step === 4 && <Phone callback={PhoneCallback}/>}
-        {step === 5 && <Code callback={CodeCallback}/>}
+        {state.step === 0 && <Welcome callback={WelcomeCallback} />}
+        {state.step === 1 && <Import callback={ImportCallback}/>}
+        {state.step === 2 && <People callback={PeopleCallback}/>}
+        {state.step === 3 && <Photo callback={PhotoCallback}/>}
+        {state.step === 4 && <Phone callback={PhoneCallback}/>}
+        {state.step === 5 && <Code callback={CodeCallback}/>}
       </div>
     </div>
   )

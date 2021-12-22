@@ -1,20 +1,19 @@
 import React, {FC} from "react";
-import NumberFormat from "react-number-format";
+import NumberFormat, {NumberFormatValues} from "react-number-format";
 import style from "./input.phone.module.scss";
 
 interface IInputPhone {
-  callback(e: React.ChangeEvent<HTMLInputElement>): void,
+  callback(data: {formattedValue: string}): void
 }
 
 const InputPhone: FC<IInputPhone> = ({ callback }) => {
   return (
     <>
-      <input
+      <NumberFormat
         className={style.input_phone}
-        placeholder='+38 (063) ___-__-__'
-        name="phone"
-        type="text"
-        onChange={callback}
+        format="+38 (###) ###-##-##"
+        allowEmptyFormatting mask="_"
+        onValueChange={callback}
       />
     </>
   )

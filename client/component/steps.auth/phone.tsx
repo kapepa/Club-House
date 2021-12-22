@@ -1,22 +1,32 @@
-import React, {FC} from "react";
+import React, {FC, useState} from "react";
 import style from "./steps.auth.module.scss";
 import Button from "../button";
 import Link from "next/link";
 import InputPhone from "../input.phone";
+import Regexp from "../../helpers/regexp";
 
-interface IPhone {
-  callback(e: React.MouseEvent<HTMLButtonElement>): void;
+interface ICallback {
+  next: boolean,
+  phone?: string | undefined,
 }
 
-const Phone: FC<IPhone> = ({callback}) => {
+interface IPhone {
+  callback(data:ICallback): void
+}
 
+const Phone: FC<IPhone> = ({ callback }) => {
+  const [phone, setPhone] = useState<string | undefined>(undefined);
   const ConfirmedClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    callback(e)
+    callback({next: true})
   }
 
-  const PhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target)
+  const PhoneChange = (data: {formattedValue: string}) => {
+    const { formattedValue } = data;
+    setPhone(formattedValue);
+    callback({next: false, phone: formattedValue})
   }
+
+  const ValidPhone = (phone: string | undefined): boolean => phone ? !Regexp.phone.test(phone) : true;
 
   return (
     <>
@@ -30,7 +40,7 @@ const Phone: FC<IPhone> = ({callback}) => {
         <InputPhone callback={PhoneChange} />
       </div>
       <div className="flex justify-center">
-        <Button name="Confirmed" callback={ConfirmedClick}/>
+        <Button name="Confirmed" callback={ConfirmedClick} disabled={ValidPhone(phone)}/>
       </div>
       <div className={`flex justify-center ${style.steps__basement}`}>
         <Link href="/trystill">
