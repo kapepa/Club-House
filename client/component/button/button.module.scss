@@ -1,17 +1,36 @@
 .btn{
   font-size: 14px;
-  padding: 12px 17px;
+  padding: 10px 17px;
   border-radius: 20px;
   border: none;
   outline: none;
   color: #fff;
-  background-color: #0070f3;
   cursor: pointer;
-  transition: background-color .2s linear;
-  &:hover{
-    background-color: #4578b3;
-  }
+  transition: background-color .2s linear, color .2s linear;
   &__disabled{
     background-color: gray;
+  }
+  &__blue{
+    background-color: #0070f3;
+    &:hover{
+      background-color: #4578b3;
+    }
+  }
+  &__frame{
+    border: 2px solid #0070f3;
+    background-color: transparent;
+    color: #0070f3;
+    &:hover{
+      color: #fff;
+    }
+  }
+  &__green{
+    border: 2px solid green;
+    background-color: green;
+    &:hover{
+      color: #fff;
+      background-color: darkgreen;
+      border: 2px solid darkgreen;
+    }
   }
 }

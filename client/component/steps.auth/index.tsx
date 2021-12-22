@@ -1,4 +1,5 @@
 import React, {FC, useState} from "react";
+import { useRouter } from 'next/router'
 import style from "./steps.auth.module.scss";
 import Welcome from "./welcome";
 import Import from "./import";
@@ -13,15 +14,18 @@ interface IState {
   name: string | null;
   avatar: string | undefined | File;
   phone: string | undefined;
+  code: number | undefined;
 }
 
 const StepsAuth: FC = () => {
+  const router = useRouter()
   const [state, setState] = useState<IState>({
-    step: 5,
+    step: 0,
     welcome: false,
     name: null,
     avatar: undefined,
-    phone: undefined
+    phone: undefined,
+    code: undefined,
   })
 
   const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1});
@@ -40,7 +44,10 @@ const StepsAuth: FC = () => {
     if(data.phone)  setState({...state, avatar: data.phone});
     if(data.next) setState({...state, step: 5});
   }
-  const CodeCallback = (e: React.MouseEvent<HTMLButtonElement>) => {console.log(e.target)}
+  const CodeCallback = (data: {next: boolean, code?: number}) => {
+    //request to server
+    router.push("/hall")
+  }
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow`}>

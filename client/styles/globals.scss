@@ -57,6 +57,10 @@ h1,h2,h3,h4,h5,h6{
   justify-content: space-between;
 }
 
+.justify-flex-start{
+  justify-content: flex-start;
+}
+
 .justify-center{
   justify-content: center;
 }
@@ -71,4 +75,9 @@ h1,h2,h3,h4,h5,h6{
 
 .pointer{
   cursor: pointer
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }

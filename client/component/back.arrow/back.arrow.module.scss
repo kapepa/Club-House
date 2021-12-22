@@ -1,0 +1,29 @@
+.back_arrow{
+  display: block;
+  margin: 10px;
+  width: 15px;
+  height: 15px;
+  border-top: 3px solid #000;
+  border-left: 3px solid #000;
+  border-radius: 3px;
+  cursor: pointer;
+  transform: rotate(-45deg);
+  &::after{
+    content: "";
+    display: block;
+    width: 3px;
+    height: 30px;
+    background-color: black;
+    transform: rotate(-45deg) translate(9.5px, 2px);
+    left: 0;
+    top: 0;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+  }
+  &__back{
+    padding-left: 20px;
+    line-height: 0;
+    font-family: "Nunito-Bold", sans-serif;
+    font-size: 17px;
+  }
+}
