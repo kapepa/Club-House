@@ -1,4 +1,5 @@
 import React, {FC, useState} from "react";
+import { useRouter } from 'next/router'
 import style from "./steps.auth.module.scss";
 import Welcome from "./welcome";
 import Import from "./import";
@@ -8,30 +9,55 @@ import Phone from "./phone";
 import Code from "./code";
 
 interface IState {
+  step: number;
   welcome: boolean;
+  name: string | null;
+  avatar: string | undefined | File;
+  phone: string | undefined;
+  code: number | undefined;
 }
 
 const StepsAuth: FC = () => {
-  const [step, setStep] = useState<number>(0);
+  const router = useRouter()
   const [state, setState] = useState<IState>({
+    step: 0,
     welcome: false,
+    name: null,
+    avatar: undefined,
+    phone: undefined,
+    code: undefined,
   })
 
-  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(1)
-  const ImportCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(2)
-  const PeopleCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(3)
-  const PhotoCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(4)
-  const PhoneCallback = (e: React.MouseEvent<HTMLButtonElement>) => setStep(5)
+  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1});
+  const ImportCallback = (data: {next: boolean}) => {
+    if(data.next) setState({...state, step: 2});
+  }
+  const PeopleCallback = (data: {next: boolean, name?: string}) => {
+    if(data.name) setState({...state, name: data.name});
+    if(data.next) setState({...state, step: 3});
+  }
+  const PhotoCallback = (data: {next: boolean, avatar?: File | string | undefined}) => {
+    if(data.avatar) setState({...state, avatar: data.avatar});
+    if(data.next) setState({...state, step: 4});
+  }
+  const PhoneCallback = (data: {next: boolean, phone?: string}) => {
+    if(data.phone)  setState({...state, avatar: data.phone});
+    if(data.next) setState({...state, step: 5});
+  }
+  const CodeCallback = (data: {next: boolean, code?: number}) => {
+    //request to server
+    router.push("/hall")
+  }
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow`}>
       <div className={`flex justify-center flex-column ${style.steps__frame}`}>
-        {step === 0 && <Welcome callback={WelcomeCallback} />}
-        {step === 1 && <Import callback={ImportCallback}/>}
-        {step === 2 && <People callback={PeopleCallback}/>}
-        {step === 3 && <Photo callback={PhotoCallback}/>}
-        {step === 4 && <Phone callback={PhoneCallback}/>}
-        {step === 5 && <Code/>}
+        {state.step === 0 && <Welcome callback={WelcomeCallback} />}
+        {state.step === 1 && <Import callback={ImportCallback}/>}
+        {state.step === 2 && <People callback={PeopleCallback}/>}
+        {state.step === 3 && <Photo callback={PhotoCallback}/>}
+        {state.step === 4 && <Phone callback={PhoneCallback}/>}
+        {state.step === 5 && <Code callback={CodeCallback}/>}
       </div>
     </div>
   )

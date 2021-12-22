@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 import Head from "next/head";
 import Footer from "../component/footer";
 import NavUser from "../component/nav.user";
+import BackArrow from "../component/back.arrow";
 
 interface IBaseWrapper {
   title: string;
@@ -19,6 +20,7 @@ const BaseWrapper: FC<IBaseWrapper> = ({children, title, description}) => {
         <div className="flex flex-column vh">
           <main className="flex flex-column flex-grow">
             <NavUser/>
+            <BackArrow/>
             {children}
           </main>
           <Footer/>
