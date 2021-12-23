@@ -46,7 +46,7 @@ const StepsAuth: FC = () => {
   }
   const CodeCallback = (data: {next: boolean, code?: number}) => {
     //request to server
-    router.push("/hall")
+    router.push("/hall");
   }
 
   return (
