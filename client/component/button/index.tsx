@@ -28,6 +28,6 @@ const Button: FC<IButton> = ({name, callback, disabled = false, color}) => {
       disabled={disabled}
     >{name}</button>
   )
-}
+};
 
 export default Button;
