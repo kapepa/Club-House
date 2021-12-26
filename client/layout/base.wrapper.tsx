@@ -7,9 +7,10 @@ import BackArrow from "../component/back.arrow";
 interface IBaseWrapper {
   title: string;
   description: string;
+  isHall?: boolean
 }
 
-const BaseWrapper: FC<IBaseWrapper> = ({children, title, description}) => {
+const BaseWrapper: FC<IBaseWrapper> = ({children, title, description, isHall}) => {
   return (
     <>
       <Head>

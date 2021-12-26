@@ -1,0 +1,8 @@
+.hall{
+  &__content{
+    padding-top: 10px;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+  }
+}
