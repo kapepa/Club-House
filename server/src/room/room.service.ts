@@ -111,4 +111,9 @@ export class RoomService {
   async all(): Promise<any> {
     return list;
   }
+
+  async one(id: string): Promise<any> {
+    const index = list.findIndex((room) => room.id === id);
+    return list[index];
+  }
 }
