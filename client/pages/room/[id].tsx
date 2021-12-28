@@ -7,7 +7,7 @@ import {RoomServerSideProps} from "./server.props";
 import {IRoom} from "../../dto/room";
 
 interface IRoomPage {
-  rooms: IRoom
+  rooms: IRoom,
 };
 
 const Room: NextPage<IRoomPage> = ({room}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
