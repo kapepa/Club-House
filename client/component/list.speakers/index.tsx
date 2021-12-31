@@ -22,6 +22,6 @@ const ListSpeakers: FC<IRoom> = ({speaker}) => {
       }
     </div>
   )
-}
+};
 
 export default ListSpeakers;
