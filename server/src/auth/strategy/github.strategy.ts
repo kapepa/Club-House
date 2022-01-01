@@ -1,32 +1,24 @@
-import { Strategy } from 'passport-github';
+import { Strategy, VerifyCallback } from 'passport-github';
 import { AuthService } from '../auth.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
-export class GithubStrategy extends PassportStrategy(Strategy) {
+export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(private readonly authService: AuthService) {
     super({
-      clientID: '67b2ca3ebfc0d954e83d',
-      clientSecret: '0776a8e612ae8594f79867ab9b471eb96a3f3fd6',
-      // callbackURL: "http://127.0.0.1:3000/auth/github/callback"
+      clientID: process.env.STRATEGY_GITHUB_ID,
+      clientSecret: process.env.STRATEGY_GITHUB_SECRET,
+      callbackURL: 'http://localhost:5000/auth/github/redirect',
     });
   }
 
-  async validate(email, password, done: any) {
-    console.log(email);
-    // await this.authService
-    //   .logIn(email, password)
-    //   .then((user) => done(null, user))
-    //   .catch((err) => done(err, false));
+  async validate(
+    id: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ) {
+    done(null, profile?._raw);
   }
 }
-
-export const callback = (err, user, info) => {
-  if (typeof info != 'undefined') {
-    throw new UnauthorizedException(info.message);
-  } else if (err || !user) {
-    throw err || new UnauthorizedException();
-  }
-  return user;
-};
