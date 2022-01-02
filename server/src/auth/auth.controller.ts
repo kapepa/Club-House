@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Post,
   Req,
   Res,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { Request } from 'express';
 
 @Controller('/auth')
 export class AuthController {
@@ -36,15 +38,20 @@ export class AuthController {
     const user = await this.authService.GoogleLogin(req.user);
     return user;
   }
+
   @UseGuards(AuthGuard('facebook'))
   @Get('/facebook')
-  async Facebook(@Req() req): Promise<void> {
-    return;
+  async Facebook(@Req() req): Promise<any> {
+    return HttpStatus.OK;
   }
+
   @UseGuards(AuthGuard('facebook'))
   @Get('/facebook/redirect')
-  async FacebookRedirect(@Req() req): Promise<any> {
+  async FacebookRedirect(@Req() req: Request): Promise<any> {
     const user = await this.authService.FacebookLogin(req.user);
-    return user;
+    return {
+      statusCode: HttpStatus.OK,
+      data: req.user,
+    };
   }
 }

@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-facebook';
+import { config } from 'dotenv';
+
+config();
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor() {
     super({
-      clientID: 934679190506447,
-      clientSecret: '3e727524461631b957b636ebbcdb5635',
+      clientID: process.env.STRATEGY_FACEBOOK_ID,
+      clientSecret: process.env.STRATEGY_FACEBOOK_SECRET,
       callbackURL: 'http://localhost:5000/auth/facebook/redirect',
-      scope: 'email',
+      scope: 'emails',
       profileFields: ['emails', 'name'],
     });
   }
@@ -30,7 +33,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       user,
       accessToken,
     };
-
+    console.log(user);
     done(null, payload);
   }
 }
