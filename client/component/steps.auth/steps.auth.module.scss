@@ -89,6 +89,12 @@
     text-align: center;
     display: block;
   }
+  &__cell{
+    padding-bottom: 7px;
+    &:last-child{
+      padding-bottom: 0;
+    }
+  }
   &__anchor{
     font-size: 12px;
     padding: 0 3px;
