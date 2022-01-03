@@ -1,26 +1,33 @@
-import React, {FC} from "react";
+import React, {FC, useEffect} from "react";
 import style from "./steps.auth.module.scss";
 import Button from "../button";
-import Link from "next/link";
 import Avatar from "../avatar";
+import { config } from "../../config";
 
 interface IImport {
   callback(data: {next: boolean}): void;
 }
 
 const Import: FC<IImport> = ({callback}) => {
-
   const ImportClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     callback({next: true});
   }
 
-  const GitHubClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.target)
+  const GitHubClick = async (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.open(`${config.url}/auth/github`,`AuthGitHub`, `left=100,top=100,width=520,height=520`);
   }
 
   const GoogleClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.target)
+    e.preventDefault();
+    window.open(`${config.url}/auth/google`, `AuthGoogle`, `left=100,top=100,width=520,height=520`);
   }
+
+  useEffect(() => {
+    window.addEventListener('message', (e: MessageEvent) => {
+      // WindowRef.current.close();
+    })
+  },[])
 
   return (
     <>
@@ -45,4 +52,4 @@ const Import: FC<IImport> = ({callback}) => {
   )
 }
 
-export default Import
+export default Import;

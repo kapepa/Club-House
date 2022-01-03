@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { UserDto } from '../dto/user.dto';
 
 @Injectable()
 export class AuthService {
-  async GoogleLogin(user: any): Promise<any> {
+  async GoogleLogin(user: UserDto): Promise<UserDto> {
     console.log(user);
-    return 'sdas';
+    return user;
   }
-  async GithubLogin(user: any): Promise<any> {
+  async GithubLogin(user: UserDto): Promise<UserDto> {
     console.log(user);
-    return 'sdas';
+    return user;
   }
-  async FacebookLogin(user: any): Promise<any> {
+  async FacebookLogin(user: UserDto): Promise<UserDto> {
     console.log(user);
-    return 'FacebookLogin';
+    return user;
   }
 }
