@@ -6,6 +6,7 @@ export class UserDto {
   avatar: string;
   isActive: boolean;
   phone: string;
+  code?: string;
   created_at?: Date;
   updated_at?: Date;
 }

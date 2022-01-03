@@ -34,18 +34,19 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      // const user = await this.authService.GithubLogin({
-      //   email: '',
-      //   username: req.user.username,
-      //   fullname: req.user.displayName,
-      //   avatar: req.user._raw.avatar_url,
-      //   isActive: false,
-      //   phone: '',
-      // });
+      const user = await this.authService.GithubLogin({
+        email: '',
+        username: req.user.username,
+        fullname: req.user.displayName,
+        avatar: req.user.photos[0].value,
+        isActive: false,
+        phone: '',
+        code: '',
+      });
       res.send(
-        JSON.stringify(
-          `<script>window.opener.postMessage('test postMessage', '*'); window.close();</script>`,
-        ),
+        `<script>window.opener.postMessage(${JSON.stringify(
+          user,
+        )}, '*'); window.close();</script>`,
       );
     } catch (e) {
       throw new HttpException(e.name, HttpStatus.FORBIDDEN);
@@ -76,10 +77,13 @@ export class AuthController {
         avatar: req.user.picture,
         isActive: false,
         phone: '',
+        code: '',
       });
       res.send(
         JSON.stringify(
-          `<script>window.opener.postMessage('test postMessage', '*'); window.close();</script>`,
+          `<script>window.opener.postMessage(${JSON.stringify(
+            user,
+          )}, '*'); window.close();</script>`,
         ),
       );
     } catch (e) {
@@ -101,7 +105,15 @@ export class AuthController {
   @Get('/facebook/redirect')
   async FacebookRedirect(@Req() req: Request): Promise<any> {
     try {
-      // const user = await this.authService.FacebookLogin(req.user);
+      const user = await this.authService.FacebookLogin({
+        email: '',
+        username: '',
+        fullname: '',
+        avatar: '',
+        isActive: false,
+        phone: '',
+        code: '',
+      });
       return {
         statusCode: HttpStatus.OK,
         data: req.user,

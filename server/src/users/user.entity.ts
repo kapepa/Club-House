@@ -29,6 +29,9 @@ export class User {
   @Column()
   phone: string;
 
+  @Column()
+  code: string;
+
   @CreateDateColumn()
   created_at: Date;
 
