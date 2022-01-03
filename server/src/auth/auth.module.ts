@@ -5,9 +5,10 @@ import { AuthController } from './auth.controller';
 import { GithubStrategy } from './strategy/github.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { FacebookStrategy } from './strategy/facebook.strategy';
+import { UserModule } from '../users/user.module';
 
 @Module({
-  imports: [PassportModule],
+  imports: [PassportModule, UserModule],
   providers: [AuthService, GithubStrategy, GoogleStrategy, FacebookStrategy],
   controllers: [AuthController],
 })

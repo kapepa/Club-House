@@ -1,33 +1,49 @@
-import React, {FC} from "react";
+import React, {FC, useEffect} from "react";
 import style from "./steps.auth.module.scss";
 import Button from "../button";
-import Link from "next/link";
 import Avatar from "../avatar";
+import { config } from "../../config";
 
 interface IImport {
   callback(data: {next: boolean}): void;
 }
 
 const Import: FC<IImport> = ({callback}) => {
-
   const ImportClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     callback({next: true});
   }
 
-  const AvatarClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.target)
+  const GitHubClick = async (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.open(`${config.url}/auth/github`,`AuthGitHub`, `left=100,top=100,width=520,height=520`);
   }
+
+  const GoogleClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.open(`${config.url}/auth/google`, `AuthGoogle`, `left=100,top=100,width=520,height=520`);
+  }
+
+  useEffect(() => {
+    window.addEventListener('message', (e: MessageEvent) => {
+      // WindowRef.current.close();
+    })
+  },[])
 
   return (
     <>
       <div className={`flex justify-center ${style.steps__cap}`}>
-        <h3 className={`${style.steps__h3} ${style.steps__import}`}>Do you want import info from GitHub?</h3>
+        <h3 className={`${style.steps__h3} ${style.steps__import}`}>Do you want import info from social?</h3>
       </div>
       <div className={`flex justify-center ${style.steps__content}`}>
-        <Avatar callback={AvatarClick} size={60}/>
+        <Avatar callback={() => {}} size={60}/>
       </div>
-      <div className="flex justify-center">
-        <Button name="Import from GitHub" callback={AvatarClick}/>
+      <div className="flex justify-center flex-column">
+        <div className={`flex content-center ${style.steps__cell}`}>
+          <Button name="Import from GitHub" callback={GitHubClick}/>
+        </div>
+        <div className={`flex content-center ${style.steps__cell}`}>
+          <Button name="Import from Google" callback={GoogleClick}/>
+        </div>
       </div>
       <div className={`flex justify-center ${style.steps__basement}`}>
         <a onClick={ImportClick} className={`${style.steps__anchor}`}>Enter my info manually</a>
@@ -36,4 +52,4 @@ const Import: FC<IImport> = ({callback}) => {
   )
 }
 
-export default Import
+export default Import;

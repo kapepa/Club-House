@@ -12,6 +12,9 @@ export class User {
   id: string;
 
   @Column()
+  email: string;
+
+  @Column()
   username: string;
 
   @Column()
@@ -25,6 +28,9 @@ export class User {
 
   @Column()
   phone: string;
+
+  @Column()
+  code: string;
 
   @CreateDateColumn()
   created_at: Date;

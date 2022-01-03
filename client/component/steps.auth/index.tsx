@@ -20,7 +20,7 @@ interface IState {
 const StepsAuth: FC = () => {
   const router = useRouter()
   const [state, setState] = useState<IState>({
-    step: 0,
+    step: 1,
     welcome: false,
     name: null,
     avatar: undefined,

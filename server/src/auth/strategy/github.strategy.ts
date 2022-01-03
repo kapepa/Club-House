@@ -19,6 +19,6 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     profile: any,
     done: VerifyCallback,
   ) {
-    done(null, profile?._raw);
+    done(null, profile);
   }
 }
