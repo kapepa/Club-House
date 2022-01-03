@@ -34,14 +34,14 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const user = await this.authService.GithubLogin({
-        email: '',
-        username: req.user.username,
-        fullname: req.user.displayName,
-        avatar: req.user._raw.avatar_url,
-        isActive: false,
-        phone: '',
-      });
+      // const user = await this.authService.GithubLogin({
+      //   email: '',
+      //   username: req.user.username,
+      //   fullname: req.user.displayName,
+      //   avatar: req.user._raw.avatar_url,
+      //   isActive: false,
+      //   phone: '',
+      // });
       res.send(
         JSON.stringify(
           `<script>window.opener.postMessage('test postMessage', '*'); window.close();</script>`,
