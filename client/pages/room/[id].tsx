@@ -4,7 +4,7 @@ import style from "./room.module.scss";
 import BaseWrapper from "../../layout/base.wrapper";
 import ListSpeakers from "../../component/list.speakers";
 import {RoomServerSideProps} from "./server.props";
-import {IRoom} from "../../dto/room";
+import {IRoom} from "../../dto/room.dto";
 
 interface IRoomPage {
   rooms: IRoom,

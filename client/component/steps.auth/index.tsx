@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import { useRouter } from 'next/router'
 import style from "./steps.auth.module.scss";
 import Welcome from "./welcome";
@@ -11,7 +11,7 @@ import Code from "./code";
 interface IState {
   step: number;
   welcome: boolean;
-  name: string | null;
+  username: string | null;
   avatar: string | undefined | File;
   phone: string | undefined;
   code: number | undefined;
@@ -20,34 +20,39 @@ interface IState {
 const StepsAuth: FC = () => {
   const router = useRouter()
   const [state, setState] = useState<IState>({
-    step: 1,
+    step: 0,
     welcome: false,
-    name: null,
+    username: null,
     avatar: undefined,
     phone: undefined,
     code: undefined,
   })
 
   const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1});
-  const ImportCallback = (data: {next: boolean}) => {
+  const ImportCallback = (data: {next: boolean, profile: {username: string, avatar: string, phone: string}}) => {
+    if(data.profile) return setState({...state, ...data.profile, step: 4});
     if(data.next) setState({...state, step: 2});
   }
-  const PeopleCallback = (data: {next: boolean, name?: string}) => {
-    if(data.name) setState({...state, name: data.name});
+  const PeopleCallback = (data: {next: boolean, username?: string}) => {
+    if(data.username) return setState({...state, username: data.username, step: 3});
     if(data.next) setState({...state, step: 3});
   }
   const PhotoCallback = (data: {next: boolean, avatar?: File | string | undefined}) => {
-    if(data.avatar) setState({...state, avatar: data.avatar});
+    if(data.avatar) return setState({...state, avatar: data.avatar, step: 4});
     if(data.next) setState({...state, step: 4});
   }
   const PhoneCallback = (data: {next: boolean, phone?: string}) => {
-    if(data.phone)  setState({...state, avatar: data.phone});
+    if(data.phone) return  setState({...state, avatar: data.phone, step: 5});
     if(data.next) setState({...state, step: 5});
   }
   const CodeCallback = (data: {next: boolean, code?: number}) => {
-    //request to server
+    //make request to server
     router.push("/hall");
   }
+
+  useEffect(() => {
+    console.log(state)
+  },[state])
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow`}>

@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import { useRouter } from "next/router";
 import style from "./room.card.module.scss";
-import { IRoom } from "../../dto/room";
+import { IRoom } from "../../dto/room.dto";
 import Avatar from "../avatar";
 
 

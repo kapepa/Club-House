@@ -5,7 +5,7 @@ import Input from "../input";
 import Regexp from "../../helpers/regexp";
 
 interface IPeople {
-  callback(data: {next: boolean, name?: string}): void;
+  callback(data: {next: boolean, username?: string}): void;
 }
 
 const People: FC<IPeople> = ({callback}) => {
@@ -18,10 +18,10 @@ const People: FC<IPeople> = ({callback}) => {
   const InputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setName(value);
-    callback({next: false, name: value})
+    callback({next: false, username: value})
   }
 
-  const ValidName = (name: string): boolean => Regexp.name.test(name);
+  const ValidName = (username: string): boolean => Regexp.name.test(username);
 
   return (
     <>

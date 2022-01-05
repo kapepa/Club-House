@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import style from "./list.speakers.module.scss";
 import Avatar from "../avatar";
-import {IRoom} from "../../dto/room";
+import {IRoom} from "../../dto/room.dto";
 
 const ListSpeakers: FC<IRoom> = ({speaker}) => {
   return (
