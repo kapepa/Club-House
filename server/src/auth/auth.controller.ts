@@ -2,23 +2,42 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Req,
   Res,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from '../users/user.entity';
 
+@ApiBearerAuth()
+@ApiTags('auth')
+@Controller('auth')
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(AuthGuard('github'))
+  @Post('/registration')
+  @ApiResponse({
+    status: 200,
+    description: 'Registaration new user',
+  })
+  async Registration(@Body() body): Promise<string> {
+    console.log(body);
+    return 'fds';
+  }
+
   @Get('/github')
+  @UseGuards(AuthGuard('github'))
+  @ApiResponse({
+    status: 200,
+    description: 'Open github for auth',
+  })
   async GitHub(@Req() req): Promise<HttpStatus> {
     try {
       return HttpStatus.OK;
@@ -27,8 +46,13 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('github'))
   @Get('/github/redirect')
+  @UseGuards(AuthGuard('github'))
+  @ApiResponse({
+    status: 200,
+    description: 'Receive data from gitnub and save',
+    type: User,
+  })
   async GitHubRedirect(
     @Req() req: { Request; user: any },
     @Res() res: Response,
@@ -53,8 +77,12 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('google'))
   @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  @ApiResponse({
+    status: 200,
+    description: 'Open google for auth',
+  })
   async Google(@Req() req): Promise<HttpStatus> {
     try {
       return HttpStatus.OK;
@@ -65,6 +93,11 @@ export class AuthController {
 
   @UseGuards(AuthGuard('google'))
   @Get('/google/redirect')
+  @ApiResponse({
+    status: 200,
+    description: 'Receive data from google and save',
+    type: User,
+  })
   async GoogleRedirect(
     @Req() req: { Request; user: any },
     @Res() res: Response,
@@ -80,11 +113,9 @@ export class AuthController {
         code: '',
       });
       res.send(
-        JSON.stringify(
-          `<script>window.opener.postMessage(${JSON.stringify(
-            user,
-          )}, '*'); window.close();</script>`,
-        ),
+        `<script>window.opener.postMessage(${JSON.stringify(
+          user,
+        )}, '*'); window.close();</script>`,
       );
     } catch (e) {
       throw new HttpException(e.name, HttpStatus.FORBIDDEN);
@@ -103,7 +134,10 @@ export class AuthController {
 
   @UseGuards(AuthGuard('facebook'))
   @Get('/facebook/redirect')
-  async FacebookRedirect(@Req() req: Request): Promise<any> {
+  async FacebookRedirect(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
     try {
       const user = await this.authService.FacebookLogin({
         email: '',
@@ -114,10 +148,11 @@ export class AuthController {
         phone: '',
         code: '',
       });
-      return {
-        statusCode: HttpStatus.OK,
-        data: req.user,
-      };
+      res.send(
+        `<script>window.opener.postMessage(${JSON.stringify(
+          user,
+        )}, '*'); window.close();</script>`,
+      );
     } catch (e) {
       throw new HttpException(e.name, HttpStatus.FORBIDDEN);
     }

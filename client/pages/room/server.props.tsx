@@ -1,8 +1,8 @@
 import { GetServerSideProps } from 'next'
-import Axios from "../../helpers/axios";
+import { OneRooms } from "../../helpers/request";
 
 export const RoomServerSideProps: GetServerSideProps = async (context) => {
-  const room = await Axios.post(`/room/one/${context.query.id}`).then((res) => res.data)
+  const room = await OneRooms(context.query.id as string);
   return {
     props: { room },
   }

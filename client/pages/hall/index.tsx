@@ -4,7 +4,7 @@ import { InferGetServerSidePropsType, NextPage} from "next";
 import BaseWrapper from "../../layout/base.wrapper";
 import HallPanell from "../../component/hall.panell";
 import RoomCard from "../../component/room.card";
-import { IRoom } from "../../dto/room";
+import { IRoom } from "../../dto/room.dto";
 import { HallServerSideProps } from './server.props';
 
 interface IHall {
