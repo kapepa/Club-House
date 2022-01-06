@@ -7,8 +7,10 @@ import People from "./people";
 import Photo from "./photo";
 import Phone from "./phone";
 import Code from "./code";
+import {RegUser} from "../../helpers/request";
 
 interface IState {
+  id?: string | undefined
   step: number;
   welcome: boolean;
   username: string | null;
@@ -20,15 +22,16 @@ interface IState {
 const StepsAuth: FC = () => {
   const router = useRouter()
   const [state, setState] = useState<IState>({
-    step: 1,
+    step: 4,
+    id: undefined,
     welcome: false,
-    username: null,
+    username: "TestName",
     avatar: undefined,
     phone: undefined,
     code: undefined,
   })
 
-  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1});
+  const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1, welcome: true});
   const ImportCallback = (data: {next: boolean, profile: {username: string, avatar: string, phone: string}}) => {
     if(data.profile) return setState({...state, ...data.profile, step: 4});
     if(data.next) setState({...state, step: 2});
@@ -38,21 +41,33 @@ const StepsAuth: FC = () => {
     if(data.next) setState({...state, step: 3});
   }
   const PhotoCallback = (data: {next: boolean, avatar?: File | string | undefined}) => {
-    if(data.avatar) return setState({...state, avatar: data.avatar, step: 4});
+    if(data.avatar) return setState({...state, avatar: data.avatar, step: 3});
     if(data.next) setState({...state, step: 4});
   }
-  const PhoneCallback = (data: {next: boolean, phone?: string}) => {
-    if(data.phone) return  setState({...state, avatar: data.phone, step: 5});
-    if(data.next) setState({...state, step: 5});
+  const PhoneCallback = async (data: {next: boolean, phone?: string}) => {
+    // if(data.phone) return  setState({...state, avatar: data.phone, step: 4});
+    if(data.next){
+      await createForm();
+
+      // setState({...state, step: 5});
+      // const reg = await RegUser('hellow');
+    }
   }
   const CodeCallback = (data: {next: boolean, code?: number}) => {
     //make request to server
     router.push("/hall");
   }
 
-  useEffect(() => {
-    console.log(state)
-  },[state])
+  const createForm = async (): Promise<string> => {
+    const form = new FormData();
+    if(state.id) form.append('id', state.id);
+    if(state.username) form.append('username', state.username);
+    if(state.avatar) form.append('avatar', state.avatar);
+    if(state.phone) form.append('phone', state.phone);
+
+    const reg = await RegUser(form);
+    return reg
+  }
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow`}>

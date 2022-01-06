@@ -18,7 +18,7 @@ const People: FC<IPeople> = ({callback}) => {
   const InputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setName(value);
-    callback({next: false, username: value})
+    // callback({next: false, username: value})
   }
 
   const ValidName = (username: string): boolean => Regexp.name.test(username);

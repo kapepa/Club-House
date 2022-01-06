@@ -8,7 +8,7 @@ interface IPhoto {
 }
 
 const Photo: FC<IPhoto> = ({callback}) => {
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
 
   const ChosePhone = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLSpanElement>) => {

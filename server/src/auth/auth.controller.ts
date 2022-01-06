@@ -2,12 +2,12 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Req,
   Res,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -21,6 +21,16 @@ import { User } from '../users/user.entity';
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('/registration')
+  @ApiResponse({
+    status: 200,
+    description: 'Registaration new user',
+  })
+  async Registration(@Body() body): Promise<string> {
+    console.log(body);
+    return 'fds';
+  }
 
   @Get('/github')
   @UseGuards(AuthGuard('github'))
