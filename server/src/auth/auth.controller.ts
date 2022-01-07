@@ -8,12 +8,16 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UserDto } from '../dto/user.dto';
 
 @ApiBearerAuth()
 @ApiTags('auth')
@@ -22,14 +26,40 @@ import { User } from '../users/user.entity';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('/confirmed')
+  @ApiResponse({
+    status: 200,
+    description: 'Confirmed code registration user',
+  })
+  async Confirmed(
+    @Body() body: { id: string; code: string },
+  ): Promise<{ access_token: string }> {
+    const user = await this.authService.Confirmed(body);
+    return user;
+  }
+
   @Post('/registration')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @ApiResponse({
     status: 200,
     description: 'Registaration new user',
   })
-  async Registration(@Body() body): Promise<string> {
-    console.log(body);
-    return 'fds';
+  async Registration(
+    @UploadedFiles() files: Array<Express.Multer.File> | string,
+    @Body() body: UserDto,
+  ): Promise<string> {
+    try {
+      const user = Object.assign(
+        typeof body.avatar === 'string'
+          ? {}
+          : { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
+        body,
+      );
+      const profile = await this.authService.Registration(user);
+      return profile.id;
+    } catch (e) {
+      throw new HttpException('Registration', HttpStatus.FORBIDDEN);
+    }
   }
 
   @Get('/github')
@@ -42,7 +72,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GitHub', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -73,7 +103,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GitHubRedirect', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -87,7 +117,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('Google', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -118,7 +148,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GoogleRedirect', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -128,7 +158,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('Facebook', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -154,7 +184,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('FacebookRedirect', HttpStatus.FORBIDDEN);
     }
   }
 }

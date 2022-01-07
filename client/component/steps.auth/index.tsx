@@ -1,31 +1,32 @@
 import React, {FC, useEffect, useState} from "react";
 import { useRouter } from 'next/router'
 import style from "./steps.auth.module.scss";
+import {CodeConfirmed, RegUser} from "../../helpers/request";
 import Welcome from "./welcome";
 import Import from "./import";
 import People from "./people";
 import Photo from "./photo";
 import Phone from "./phone";
 import Code from "./code";
-import {RegUser} from "../../helpers/request";
+import Cookies from 'js-cookie'
 
 interface IState {
   id?: string | undefined
   step: number;
   welcome: boolean;
-  username: string | null;
+  username: string | undefined;
   avatar: string | undefined | File;
   phone: string | undefined;
-  code: number | undefined;
+  code: string | undefined;
 }
 
 const StepsAuth: FC = () => {
   const router = useRouter()
   const [state, setState] = useState<IState>({
-    step: 4,
+    step: 0,
     id: undefined,
     welcome: false,
-    username: "TestName",
+    username: undefined,
     avatar: undefined,
     phone: undefined,
     code: undefined,
@@ -37,7 +38,7 @@ const StepsAuth: FC = () => {
     if(data.next) setState({...state, step: 2});
   }
   const PeopleCallback = (data: {next: boolean, username?: string}) => {
-    if(data.username) return setState({...state, username: data.username, step: 3});
+    if(data.username) return setState({...state, username: data.username, step: 2});
     if(data.next) setState({...state, step: 3});
   }
   const PhotoCallback = (data: {next: boolean, avatar?: File | string | undefined}) => {
@@ -45,17 +46,18 @@ const StepsAuth: FC = () => {
     if(data.next) setState({...state, step: 4});
   }
   const PhoneCallback = async (data: {next: boolean, phone?: string}) => {
-    // if(data.phone) return  setState({...state, avatar: data.phone, step: 4});
+    if(data.phone) return  setState({...state, phone: data.phone, step: 4});
     if(data.next){
-      await createForm();
-
-      // setState({...state, step: 5});
-      // const reg = await RegUser('hellow');
+      await createForm().then((id: string) => {
+        setState({...state, id: id,  step: 5})
+      });
     }
   }
   const CodeCallback = (data: {next: boolean, code?: number}) => {
-    //make request to server
-    router.push("/hall");
+    if(state.id) CodeConfirmed({id: state.id, code: String(data.code)}).then((token) => {
+      Cookies.set('token', token.access_token)
+      router.push("/hall");
+    });
   }
 
   const createForm = async (): Promise<string> => {
