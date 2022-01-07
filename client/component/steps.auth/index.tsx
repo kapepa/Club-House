@@ -56,7 +56,7 @@ const StepsAuth: FC = () => {
   const CodeCallback = (data: {next: boolean, code?: number}) => {
     if(state.id) CodeConfirmed({id: state.id, code: String(data.code)}).then((token) => {
       Cookies.set('token', token.access_token)
-      // router.push("/hall");
+      router.push("/hall");
     });
   }
 

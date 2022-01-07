@@ -23,16 +23,16 @@ export class AuthService {
     const profile = await this.userService.One('id', user.id);
     if (profile.code !== user.code)
       throw new HttpException(`This code don't correct`, HttpStatus.FORBIDDEN);
-    const complete = await this.userService.Update({
+    const complete = await this.userService.Update('id', {
       ...profile,
       isActive: true,
     });
-    const token = await this.CreatToken(complete);
+    const token = await this.CreatToken(profile);
     return token;
   }
 
   async CreatToken(user: UserDto): Promise<{ access_token: string }> {
-    const payload = { username: user.username, sub: user.id, id: user.id };
+    const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -81,7 +81,7 @@ export class AuthService {
         : await this.fileService.LoadFile(user.avatar);
 
     const profile = user.hasOwnProperty('id')
-      ? await this.userService.Update({ ...user, avatar: pathUrl, code })
+      ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
       : await this.userService.Create({ ...user, avatar: pathUrl, code });
     // await this.SMSActivate(code, user.phone);
     return profile;

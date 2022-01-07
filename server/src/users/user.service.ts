@@ -24,7 +24,7 @@ export class UserService {
     return profile;
   }
 
-  async Update(user: UserDto): Promise<any> {
+  async Update(props: string, user: UserDto): Promise<any> {
     const { id, ...rest } = user;
     const profile = await this.One('id', user.id);
     if (!profile)
@@ -35,7 +35,10 @@ export class UserService {
         },
         HttpStatus.FORBIDDEN,
       );
-    const update = await this.usersRepository.update(user.id, { ...rest });
+    const update = await this.usersRepository.update(
+      { [props]: user[props] },
+      { ...rest },
+    );
     return update;
   }
 }
