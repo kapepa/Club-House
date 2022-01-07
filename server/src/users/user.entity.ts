@@ -22,7 +22,7 @@ export class User {
   @ApiProperty({ description: 'id user' })
   id: string;
 
-  @Column()
+  @Column({ default: '' })
   @IsEmail({
     message: 'email is not proper',
   })
@@ -36,7 +36,7 @@ export class User {
   @ApiProperty({ description: 'username user' })
   username: string;
 
-  @Column()
+  @Column({ default: '' })
   @Length(3, 30, {
     message: 'fullname minimu three character, max thirty',
   })
@@ -53,14 +53,14 @@ export class User {
   @ApiProperty({ description: 'active user boolean' })
   isActive: boolean;
 
-  @Column()
+  @Column({ default: '' })
   @IsPhoneNumber('IN', {
     message: 'phone number is not valid',
   })
   @ApiProperty({ description: 'phone user' })
   phone: string;
 
-  @Column()
+  @Column({ default: '' })
   @Length(4, 4, {
     message: 'incorrect confirmation code set ',
   })

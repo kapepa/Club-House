@@ -19,7 +19,7 @@ export class UserService {
   }
 
   async Create(user: UserDto): Promise<UserDto> {
-    const create = this.usersRepository.create(user);
+    const create = await this.usersRepository.create(user);
     const profile = await this.usersRepository.save(create);
     return profile;
   }
@@ -36,7 +36,6 @@ export class UserService {
         HttpStatus.FORBIDDEN,
       );
     const update = await this.usersRepository.update(user.id, { ...rest });
-    console.log(update);
     return update;
   }
 }

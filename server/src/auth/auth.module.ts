@@ -6,9 +6,22 @@ import { GithubStrategy } from './strategy/github.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { FacebookStrategy } from './strategy/facebook.strategy';
 import { UserModule } from '../users/user.module';
+import { FileModule } from '../file/file.module';
+import { JwtModule } from '@nestjs/jwt';
+import { config } from 'dotenv';
+
+config();
 
 @Module({
-  imports: [PassportModule, UserModule],
+  imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET_WORD,
+      signOptions: { expiresIn: '30d' },
+    }),
+    PassportModule,
+    UserModule,
+    FileModule,
+  ],
   providers: [AuthService, GithubStrategy, GoogleStrategy, FacebookStrategy],
   controllers: [AuthController],
 })

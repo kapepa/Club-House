@@ -26,6 +26,18 @@ import { UserDto } from '../dto/user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('/confirmed')
+  @ApiResponse({
+    status: 200,
+    description: 'Confirmed code registration user',
+  })
+  async Confirmed(
+    @Body() body: { id: string; code: string },
+  ): Promise<{ access_token: string }> {
+    const user = await this.authService.Confirmed(body);
+    return user;
+  }
+
   @Post('/registration')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @ApiResponse({
@@ -33,18 +45,20 @@ export class AuthController {
     description: 'Registaration new user',
   })
   async Registration(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles() files: Array<Express.Multer.File> | string,
     @Body() body: UserDto,
   ): Promise<string> {
     try {
       const user = Object.assign(
-        { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
+        typeof body.avatar === 'string'
+          ? {}
+          : { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
         body,
       );
       const profile = await this.authService.Registration(user);
       return profile.id;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('Registration', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -58,7 +72,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GitHub', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -89,7 +103,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GitHubRedirect', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -103,7 +117,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('Google', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -134,7 +148,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('GoogleRedirect', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -144,7 +158,7 @@ export class AuthController {
     try {
       return HttpStatus.OK;
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('Facebook', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -170,7 +184,7 @@ export class AuthController {
         )}, '*'); window.close();</script>`,
       );
     } catch (e) {
-      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+      throw new HttpException('FacebookRedirect', HttpStatus.FORBIDDEN);
     }
   }
 }
