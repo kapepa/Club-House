@@ -8,12 +8,16 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UserDto } from '../dto/user.dto';
 
 @ApiBearerAuth()
 @ApiTags('auth')
@@ -23,13 +27,25 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/registration')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @ApiResponse({
     status: 200,
     description: 'Registaration new user',
   })
-  async Registration(@Body() body): Promise<string> {
-    console.log(body);
-    return 'fds';
+  async Registration(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() body: UserDto,
+  ): Promise<string> {
+    try {
+      const user = Object.assign(
+        { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
+        body,
+      );
+      const profile = await this.authService.Registration(user);
+      return profile.id;
+    } catch (e) {
+      throw new HttpException(e.name, HttpStatus.FORBIDDEN);
+    }
   }
 
   @Get('/github')

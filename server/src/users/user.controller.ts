@@ -21,7 +21,7 @@ export class UserController {
     type: UserDto,
   })
   async One(@Param() id: string): Promise<any> {
-    const one = await this.userService.One();
-    return one;
+    // const one = await this.userService.One();
+    return 'one user';
   }
 }
