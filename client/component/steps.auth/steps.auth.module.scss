@@ -6,6 +6,9 @@
     min-width: 320px;
     max-width: 430px;
     position: relative;
+    &:last-child{
+      margin-top: 80px;
+    }
   }
   &__h3{
     text-align: center;
@@ -68,6 +71,13 @@
       height: 35px;
     }
   }
+  &__envelope{
+    &::before{
+      background-image: url("../../public/svg/envelope.svg");
+      width: 35px;
+      height: 35px;
+    }
+  }
   &__cap{
     position: absolute;
     left: 0;
@@ -109,7 +119,18 @@
     width: 50px;
     text-align: center;
   }
+  &__input_default{
+    margin-bottom: 10px;
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
   &__avatar_file{
     display: none;
+  }
+  &__or{
+    padding: 15px 0 20px;
+    font-size: 20px;
+    font-weight: bold;
   }
 }

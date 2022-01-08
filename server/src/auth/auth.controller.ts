@@ -90,6 +90,7 @@ export class AuthController {
     try {
       const user = await this.authService.GithubLogin({
         email: '',
+        password: '',
         username: req.user.username,
         fullname: req.user.displayName,
         avatar: req.user.photos[0].value,
@@ -135,6 +136,7 @@ export class AuthController {
     try {
       const user = await this.authService.GoogleLogin({
         email: req.user.email,
+        password: '',
         username: req.user.firstName,
         fullname: req.user.lastName,
         avatar: req.user.picture,
@@ -171,6 +173,7 @@ export class AuthController {
     try {
       const user = await this.authService.FacebookLogin({
         email: '',
+        password: '',
         username: '',
         fullname: '',
         avatar: '',

@@ -20,10 +20,10 @@ const Button: FC<IButton> = ({name, callback, disabled = false, color}) => {
       onClick={callback}
       className={`
         ${style.btn} 
-        ${disabled ? style.btn__disabled : ''}
         ${color === "blue" || color === undefined? style.btn__blue : ''}
         ${color === "frame"? style.btn__frame : ''}
         ${color === "green"? style.btn__green : ''}
+        ${disabled ? style.btn__disabled : ''}
        `}
       disabled={disabled}
     >{name}</button>

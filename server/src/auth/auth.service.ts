@@ -72,19 +72,25 @@ export class AuthService {
     );
   }
 
+  async EmailActivate(code: string, email: string): Promise<void> {
+    console.log(code, email);
+  }
+
   async Registration(user: UserDto): Promise<UserDto> {
-    const code: string = this.RandomCode();
-
-    const pathUrl =
-      typeof user.avatar === 'string'
-        ? user.avatar
-        : await this.fileService.LoadFile(user.avatar);
-
-    const profile = user.hasOwnProperty('id')
-      ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
-      : await this.userService.Create({ ...user, avatar: pathUrl, code });
-    // await this.SMSActivate(code, user.phone);
-    return profile;
+    this.EmailActivate('1234', user.email);
+    return user;
+    // const code: string = this.RandomCode();
+    //
+    // const pathUrl =
+    //   typeof user.avatar === 'string'
+    //     ? user.avatar
+    //     : await this.fileService.LoadFile(user.avatar);
+    //
+    // const profile = user.hasOwnProperty('id')
+    //   ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
+    //   : await this.userService.Create({ ...user, avatar: pathUrl, code });
+    // // await this.SMSActivate(code, user.phone);
+    // return profile;
   }
 
   async GoogleLogin(user: UserDto): Promise<UserDto> {
