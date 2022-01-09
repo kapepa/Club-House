@@ -47,16 +47,20 @@ export class AuthController {
   async Registration(
     @UploadedFiles() files: Array<Express.Multer.File> | string,
     @Body() body: UserDto,
-  ): Promise<string> {
+  ): Promise<{ id?: string | undefined; message: string; error: boolean }> {
     try {
+      const parseBody = { ...JSON.parse(JSON.stringify(body)) };
       const user = Object.assign(
-        typeof body.avatar === 'string'
-          ? {}
-          : { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
+        parseBody.hasOwnProperty('avatar')
+          ? parseBody
+          : {
+              avatar: JSON.parse(JSON.stringify(files)).avatar[0],
+              ...parseBody,
+            },
         body,
       );
       const profile = await this.authService.Registration(user);
-      return profile.id;
+      return profile;
     } catch (e) {
       throw new HttpException('Registration', HttpStatus.FORBIDDEN);
     }

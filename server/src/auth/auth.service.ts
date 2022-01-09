@@ -3,7 +3,9 @@ import { UserDto } from '../dto/user.dto';
 import { UserService } from '../users/user.service';
 import { FileService } from '../file/file.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as SMS from 'sms_ru';
+import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 
 config();
@@ -14,6 +16,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly fileService: FileService,
     private readonly jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async Confirmed(user: {
@@ -52,6 +55,20 @@ export class AuthService {
     return code.toString().substring(0, 4);
   }
 
+  async ExistEmail(user: UserDto): Promise<{
+    id: string | undefined;
+    message: string;
+    error: boolean;
+  } | void> {
+    const exist = await this.userService.Exist('email', user.email);
+    if (exist)
+      return {
+        id: undefined,
+        message: 'Such email already exist!',
+        error: true,
+      };
+  }
+
   async SMSActivate(code: string, phone: string): Promise<void> {
     const sms = new SMS(process.env.SMS_KEY_SECRET);
     const onlyNumber = phone.replace(
@@ -72,25 +89,59 @@ export class AuthService {
     );
   }
 
-  async EmailActivate(code: string, email: string): Promise<void> {
-    console.log(code, email);
+  async EmailActivate(
+    code: string,
+    email: string,
+    username: string,
+  ): Promise<void> {
+    this.mailerService
+      .sendMail({
+        to: email,
+        from: process.env.MAILDEV_INCOMING_USER,
+        subject: 'Registration from Clubhouse✔',
+        text: 'Welcome to Clubhouse',
+        html: `<b>Hellow ${username}, you success registration in Clubhouse! Your code for completion registration is ${code}</b>`,
+      })
+      .catch((err) => {
+        throw new HttpException(
+          'An error occured during registration',
+          HttpStatus.FORBIDDEN,
+        );
+      });
   }
 
-  async Registration(user: UserDto): Promise<UserDto> {
-    this.EmailActivate('1234', user.email);
-    return user;
-    // const code: string = this.RandomCode();
-    //
-    // const pathUrl =
-    //   typeof user.avatar === 'string'
-    //     ? user.avatar
-    //     : await this.fileService.LoadFile(user.avatar);
-    //
-    // const profile = user.hasOwnProperty('id')
-    //   ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
-    //   : await this.userService.Create({ ...user, avatar: pathUrl, code });
-    // // await this.SMSActivate(code, user.phone);
-    // return profile;
+  async Registration(
+    user: UserDto,
+  ): Promise<{ id?: string | undefined; message: string; error: boolean }> {
+    const code: string = this.RandomCode();
+
+    if (!user.hasOwnProperty('id')) {
+      const existEmail = await this.ExistEmail(user);
+      if (existEmail) return existEmail;
+    }
+
+    if (user.password.length) {
+      const hash = await bcrypt.hash(
+        user.password,
+        Number(process.env.CRYPTO_WORD_SECRET),
+      );
+      user.password = hash;
+    }
+
+    user.email.length
+      ? await this.EmailActivate(code, user.email, user.username)
+      : await this.SMSActivate(code, user.phone);
+
+    const pathUrl =
+      typeof user.avatar === 'string'
+        ? user.avatar
+        : await this.fileService.LoadFile(user.avatar);
+
+    const profile = user.hasOwnProperty('id')
+      ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
+      : await this.userService.Create({ ...user, avatar: pathUrl, code });
+
+    return { id: profile.id, message: 'success', error: false };
   }
 
   async GoogleLogin(user: UserDto): Promise<UserDto> {

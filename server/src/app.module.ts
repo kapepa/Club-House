@@ -8,6 +8,7 @@ import { config } from 'dotenv';
 import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 config();
 
@@ -15,6 +16,19 @@ config();
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '/static'),
+    }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          service: 'gmail',
+          host: 'smtp.gmail.com',
+          secure: false, // upgrade later with STARTTLS
+          auth: {
+            user: process.env.MAILDEV_INCOMING_USER,
+            pass: process.env.MAILDEV_INCOMING_PASS,
+          },
+        },
+      }),
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

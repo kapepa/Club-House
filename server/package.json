@@ -23,6 +23,7 @@
     "dev": "concurrently \"npm run start:dev\" \"npm run client\""
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.6.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^8.0.0",
@@ -31,10 +32,12 @@
     "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^5.1.5",
     "@nestjs/typeorm": "^8.0.2",
+    "@types/nodemailer": "^6.4.4",
     "@types/passport-facebook": "^2.1.11",
     "@types/passport-facebook-token": "^0.4.35",
     "@types/passport-google-oauth20": "^2.0.11",
     "@types/passport-twitter": "^1.0.37",
+    "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "concurrently": "^6.5.0",
@@ -59,6 +62,7 @@
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.0.2",
     "@types/multer": "^1.4.7",

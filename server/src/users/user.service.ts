@@ -24,6 +24,11 @@ export class UserService {
     return profile;
   }
 
+  async Exist(props: string, val: string): Promise<boolean> {
+    const profile = await this.One(props, val);
+    return profile ? true : false;
+  }
+
   async Update(props: string, user: UserDto): Promise<any> {
     const { id, ...rest } = user;
     const profile = await this.One('id', user.id);
