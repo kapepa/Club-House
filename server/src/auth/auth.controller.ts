@@ -34,7 +34,7 @@ export class AuthController {
   async Confirmed(
     @Body() body: { id: string; code: string },
   ): Promise<{ access_token: string }> {
-    const user = await this.authService.Confirmed(body);
+    const user = await this.authService.ConfirmedCode(body);
     return user;
   }
 
