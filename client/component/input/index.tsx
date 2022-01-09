@@ -5,13 +5,14 @@ interface IInput {
   type: string,
   name: string,
   placeholder: string,
+  styleClass?: string | undefined,
   callback(e: React.ChangeEvent<HTMLInputElement>): void,
 }
 
-const Input: FC<IInput> = ({type, name, placeholder, callback}) => {
+const Input: FC<IInput> = ({type, name, placeholder, callback, styleClass}) => {
   return (
     <input
-      className={`${style.input}`}
+      className={`${style.input} ${styleClass ? styleClass: ''}`}
       placeholder={placeholder}
       type={type}
       name={name}

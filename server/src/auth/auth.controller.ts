@@ -34,7 +34,7 @@ export class AuthController {
   async Confirmed(
     @Body() body: { id: string; code: string },
   ): Promise<{ access_token: string }> {
-    const user = await this.authService.Confirmed(body);
+    const user = await this.authService.ConfirmedCode(body);
     return user;
   }
 
@@ -47,16 +47,20 @@ export class AuthController {
   async Registration(
     @UploadedFiles() files: Array<Express.Multer.File> | string,
     @Body() body: UserDto,
-  ): Promise<string> {
+  ): Promise<{ id?: string | undefined; message: string; error: boolean }> {
     try {
+      const parseBody = { ...JSON.parse(JSON.stringify(body)) };
       const user = Object.assign(
-        typeof body.avatar === 'string'
-          ? {}
-          : { avatar: JSON.parse(JSON.stringify(files)).avatar[0] },
+        parseBody.hasOwnProperty('avatar')
+          ? parseBody
+          : {
+              avatar: JSON.parse(JSON.stringify(files)).avatar[0],
+              ...parseBody,
+            },
         body,
       );
       const profile = await this.authService.Registration(user);
-      return profile.id;
+      return profile;
     } catch (e) {
       throw new HttpException('Registration', HttpStatus.FORBIDDEN);
     }
@@ -90,6 +94,7 @@ export class AuthController {
     try {
       const user = await this.authService.GithubLogin({
         email: '',
+        password: '',
         username: req.user.username,
         fullname: req.user.displayName,
         avatar: req.user.photos[0].value,
@@ -135,6 +140,7 @@ export class AuthController {
     try {
       const user = await this.authService.GoogleLogin({
         email: req.user.email,
+        password: '',
         username: req.user.firstName,
         fullname: req.user.lastName,
         avatar: req.user.picture,
@@ -171,6 +177,7 @@ export class AuthController {
     try {
       const user = await this.authService.FacebookLogin({
         email: '',
+        password: '',
         username: '',
         fullname: '',
         avatar: '',

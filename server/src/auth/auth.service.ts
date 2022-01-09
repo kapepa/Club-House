@@ -3,10 +3,18 @@ import { UserDto } from '../dto/user.dto';
 import { UserService } from '../users/user.service';
 import { FileService } from '../file/file.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as SMS from 'sms_ru';
+import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 
 config();
+
+interface IRegistration {
+  id?: string | undefined;
+  message: string;
+  error: boolean;
+}
 
 @Injectable()
 export class AuthService {
@@ -14,22 +22,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly fileService: FileService,
     private readonly jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
-
-  async Confirmed(user: {
-    id: string;
-    code: string;
-  }): Promise<{ access_token: string }> {
-    const profile = await this.userService.One('id', user.id);
-    if (profile.code !== user.code)
-      throw new HttpException(`This code don't correct`, HttpStatus.FORBIDDEN);
-    const complete = await this.userService.Update('id', {
-      ...profile,
-      isActive: true,
-    });
-    const token = await this.CreatToken(profile);
-    return token;
-  }
 
   async CreatToken(user: UserDto): Promise<{ access_token: string }> {
     const payload = { username: user.username, sub: user.id };
@@ -52,6 +46,29 @@ export class AuthService {
     return code.toString().substring(0, 4);
   }
 
+  async BcryptHash(password: string): Promise<string> {
+    const hash = await bcrypt.hash(
+      password,
+      Number(process.env.CRYPTO_WORD_SECRET),
+    );
+    return hash;
+  }
+
+  async ExistEmail(user: UserDto): Promise<IRegistration> {
+    const exist = await this.userService.One('email', user.email);
+    if (exist && exist.code.length)
+      return {
+        id: undefined,
+        message: 'Such email already exist!',
+        error: true,
+      };
+    return {
+      id: undefined,
+      message: 'Such email not exist!',
+      error: false,
+    };
+  }
+
   async SMSActivate(code: string, phone: string): Promise<void> {
     const sms = new SMS(process.env.SMS_KEY_SECRET);
     const onlyNumber = phone.replace(
@@ -72,8 +89,53 @@ export class AuthService {
     );
   }
 
-  async Registration(user: UserDto): Promise<UserDto> {
+  async ConfirmedCode(user: {
+    id: string;
+    code: string;
+  }): Promise<{ access_token: string }> {
+    const profile = await this.userService.One('id', user.id);
+    if (profile.code !== user.code)
+      throw new HttpException(`This code don't correct`, HttpStatus.FORBIDDEN);
+    const complete = await this.userService.Update('id', {
+      ...profile,
+      isActive: true,
+    });
+    const token = await this.CreatToken(profile);
+    return token;
+  }
+
+  async EmailActivate(
+    code: string,
+    email: string,
+    username: string,
+  ): Promise<void> {
+    this.mailerService
+      .sendMail({
+        to: email,
+        from: process.env.MAILDEV_INCOMING_USER,
+        subject: 'Registration from Clubhouse✔',
+        text: 'Welcome to Clubhouse',
+        html: `<b>Hellow ${username}, you success registration in Clubhouse! Your code for completion registration is ${code}</b>`,
+      })
+      .catch((err) => {
+        throw new HttpException(
+          'An error occured during registration',
+          HttpStatus.FORBIDDEN,
+        );
+      });
+  }
+
+  async Registration(user: UserDto): Promise<IRegistration> {
     const code: string = this.RandomCode();
+    const existEmail = await this.ExistEmail(user);
+
+    if (existEmail.error) return existEmail;
+    if (user.password.length)
+      user.password = await this.BcryptHash(user.password);
+
+    user.email.length
+      ? await this.EmailActivate(code, user.email, user.username)
+      : await this.SMSActivate(code, user.phone);
 
     const pathUrl =
       typeof user.avatar === 'string'
@@ -83,21 +145,33 @@ export class AuthService {
     const profile = user.hasOwnProperty('id')
       ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
       : await this.userService.Create({ ...user, avatar: pathUrl, code });
-    // await this.SMSActivate(code, user.phone);
-    return profile;
+
+    return { id: profile.id, message: 'success', error: false };
   }
 
-  async GoogleLogin(user: UserDto): Promise<UserDto> {
+  async GoogleLogin(user: UserDto): Promise<UserDto | IRegistration> {
+    if (user.email.length) {
+      const existEmail = await this.ExistEmail(user);
+      if (existEmail.error) return existEmail;
+    }
     const profile = await this.userService.Create(user);
     return profile;
   }
 
-  async GithubLogin(user: UserDto): Promise<UserDto> {
+  async GithubLogin(user: UserDto): Promise<UserDto | IRegistration> {
+    if (user.email.length) {
+      const existEmail = await this.ExistEmail(user);
+      if (existEmail.error) return existEmail;
+    }
     const profile = await this.userService.Create(user);
     return profile;
   }
 
-  async FacebookLogin(user: UserDto): Promise<UserDto> {
+  async FacebookLogin(user: UserDto): Promise<UserDto | IRegistration> {
+    if (user.email.length) {
+      const existEmail = await this.ExistEmail(user);
+      if (existEmail.error) return existEmail;
+    }
     console.log(user);
     return user;
   }

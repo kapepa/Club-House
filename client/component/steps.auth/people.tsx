@@ -21,7 +21,7 @@ const People: FC<IPeople> = ({callback}) => {
     callback({next: false, username: value})
   }
 
-  const ValidName = (username: string): boolean => Regexp.name.test(username);
+  const ValidName = (username: string): boolean => !Regexp.name.test(username);
 
   return (
     <>
@@ -38,7 +38,7 @@ const People: FC<IPeople> = ({callback}) => {
         <Input callback={InputChange} name="name" type="text" placeholder="Your Name"/>
       </div>
       <div className="flex justify-center">
-        <Button name="Next" callback={NextClick} disabled={ValidName(name) ? false : true}/>
+        <Button name="Next" callback={ NextClick } disabled={ ValidName(name) }/>
       </div>
     </>
   )

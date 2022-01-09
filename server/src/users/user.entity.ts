@@ -12,6 +12,7 @@ import {
   IsPhoneNumber,
   Length,
   IsString,
+  MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -28,6 +29,16 @@ export class User {
   })
   @ApiProperty({ description: 'email user' })
   email: string;
+
+  @Column({ default: '' })
+  @IsString({
+    message: 'password is not proper',
+  })
+  @MinLength(6, {
+    message: 'short password',
+  })
+  @ApiProperty({ description: 'password user' })
+  password: string;
 
   @Column()
   @Length(3, 30, {

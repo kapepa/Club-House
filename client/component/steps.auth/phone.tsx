@@ -37,10 +37,10 @@ const Phone: FC<IPhone> = ({ callback }) => {
         </span>
       </div>
       <div className={`flex justify-center ${style.steps__content}`}>
-        <InputPhone callback={PhoneChange} />
+        <InputPhone callback={ PhoneChange } />
       </div>
       <div className="flex justify-center">
-        <Button name="Confirmed" callback={ConfirmedClick} disabled={ValidPhone(phone)}/>
+        <Button name="Confirmed" callback={ ConfirmedClick } disabled={ ValidPhone(phone) }/>
       </div>
       <div className={`flex justify-center ${style.steps__basement}`}>
         <Link href="/trystill">

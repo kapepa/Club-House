@@ -7,9 +7,6 @@
   color: #fff;
   cursor: pointer;
   transition: background-color .2s linear, color .2s linear;
-  &__disabled{
-    background-color: gray;
-  }
   &__blue{
     background-color: #0070f3;
     &:hover{
@@ -32,5 +29,8 @@
       background-color: darkgreen;
       border: 2px solid darkgreen;
     }
+  }
+  &__disabled{
+    background-color: gray;
   }
 }
