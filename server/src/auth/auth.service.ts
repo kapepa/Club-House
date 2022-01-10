@@ -143,22 +143,18 @@ export class AuthService {
   async Registration(user: UserDto): Promise<IRegistration> {
     const code: string = this.RandomCode();
 
-    if (user.email.length) {
+    if (user.email?.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
-    }
-
-    if (user.phone.length) {
+      // await this.EmailActivate(code, user.email, user.username);
+    } else if (user.phone?.length) {
       const existPhone = await this.ExistPhone(user);
       if (existPhone.error) return existPhone;
+      // await this.SMSActivate(code, user.phone);
     }
 
     if (user.password.length)
       user.password = await this.BcryptHash(user.password);
-
-    // user.email.length
-    //   ? await this.EmailActivate(code, user.email, user.username)
-    //   : await this.SMSActivate(code, user.phone);
 
     const pathUrl =
       typeof user.avatar === 'string'
