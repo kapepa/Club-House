@@ -4,7 +4,7 @@ import DefaultAvatar from "../../public/jpg/people.png";
 import style from "./avatar.module.scss";
 
 interface IAvatar {
-  url?: string | undefined ,
+  url?: string | undefined | File,
   callback? (e: React.MouseEvent<HTMLImageElement>): void;
   size?: number;
   className?: string;
@@ -13,7 +13,7 @@ interface IAvatar {
 const Avatar: FC<IAvatar> = ({callback, size = 50, url, className}) => {
   return (
     <>
-      {url ?
+      {url && typeof url === 'string' ?
         <img
           src={url}
           alt="avatar"
@@ -21,16 +21,16 @@ const Avatar: FC<IAvatar> = ({callback, size = 50, url, className}) => {
           height={size}
           className={`${style.avatar__image} ${callback ? style.avatar__pointer : '' } ${className ? className : ''}`}
           onClick={callback}
-        /> :
+        /> : '' }
+      { url === undefined ?
         <Image
-          src={url ? url : DefaultAvatar}
+          src={ DefaultAvatar }
           alt="default avatar"
           width={size}
           height={size}
           className={`${style.avatar__image} ${callback ? style.avatar__pointer : '' } ${className ? className : ''}`}
           onClick={callback}
-        />
-      }
+        />: ''}
     </>
   )
 }

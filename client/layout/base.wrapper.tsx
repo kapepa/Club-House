@@ -1,8 +1,9 @@
-import React, { FC } from 'react'
+import React, {FC, useState, createContext} from 'react'
 import Head from "next/head";
 import Footer from "../component/footer";
 import NavUser from "../component/nav.user";
 import BackArrow from "../component/back.arrow";
+import PopupError from "../component/popup.error";
 
 interface IBaseWrapper {
   title: string;
@@ -10,9 +11,23 @@ interface IBaseWrapper {
   isHall?: boolean
 }
 
+interface IErrorState{
+  condition: boolean,
+  message: string | undefined,
+}
+
+export const WarningContext = createContext((message: string): void => {});
+
 const BaseWrapper: FC<IBaseWrapper> = ({children, title, description, isHall}) => {
+  const [error, setError] = useState<IErrorState>({
+    condition: false,
+    message: undefined,
+  })
+
+  const warning = (message: string): void => setError({...error, condition: true, message});
+
   return (
-    <>
+    <WarningContext.Provider value={warning}>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -27,7 +42,10 @@ const BaseWrapper: FC<IBaseWrapper> = ({children, title, description, isHall}) =
           <Footer/>
         </div>
       </div>
-    </>
+      { error.condition &&
+        <PopupError message={error.message} callback={() => { setError({...error, condition: false}) }} />
+      }
+    </WarningContext.Provider>
   )
 }
 

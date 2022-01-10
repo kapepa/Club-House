@@ -16,10 +16,7 @@ const Welcome: FC<IWelcome> = ({callback}) => {
       </div>
       <div className={`${style.steps__content}`}>
         <span className={`${style.steps__span}`}>
-          We`re working hard to get Clubhouse ready for everyone!
-        </span>
-        <span className={`${style.steps__span}`}>
-          While we wrap up the finishing youches, we`re adding people gradually to make sure notheng breaks :)
+          We`re working hard to get Clubhouse ready for everyone! While we wrap up the finishing youches, we`re adding people gradually to make sure notheng breaks :)
         </span>
       </div>
       <div className="flex justify-center">

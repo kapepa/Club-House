@@ -5,10 +5,11 @@ import Input from "../input";
 import Regexp from "../../helpers/regexp";
 
 interface IPeople {
+  username: string | undefined
   callback(data: {next: boolean, username?: string}): void;
 }
 
-const People: FC<IPeople> = ({callback}) => {
+const People: FC<IPeople> = ({callback, username}) => {
   const [name, setName] = useState<string>('')
 
   const NextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -35,7 +36,7 @@ const People: FC<IPeople> = ({callback}) => {
         </span>
       </div>
       <div className={`flex justify-center ${style.steps__content}`}>
-        <Input callback={InputChange} name="name" type="text" placeholder="Your Name"/>
+        <Input callback={InputChange} name="name" type="text" placeholder="Your Name" value={username}/>
       </div>
       <div className="flex justify-center">
         <Button name="Next" callback={ NextClick } disabled={ ValidName(name) }/>
