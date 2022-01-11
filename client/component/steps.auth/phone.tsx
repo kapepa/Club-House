@@ -13,6 +13,7 @@ interface ICallback {
 }
 
 interface IPhone {
+  password: string | undefined,
   phoneNumber: string | undefined,
   callback(data:ICallback): void
 }
@@ -23,10 +24,10 @@ interface IState {
   confirmed: string | undefined,
 }
 
-const Phone: FC<IPhone> = ({ callback, phoneNumber }) => {
+const Phone: FC<IPhone> = ({ callback, phoneNumber, password }) => {
   const [state, setState] = useState<IState>({
-    phone: undefined,
-    password: undefined,
+    phone: phoneNumber,
+    password: password,
     confirmed: undefined,
   });
   const ConfirmedClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -64,11 +65,12 @@ const Phone: FC<IPhone> = ({ callback, phoneNumber }) => {
       <div className={`flex justify-center flex-column align-center ${style.steps__content}`}>
         <InputPhone
           callback={ PhoneChange }
-          value={phoneNumber}
+          value={state.phone}
           classes={style.steps__input_default}
         />
         <Input
           classes={style.steps__input_default}
+          value={state.password}
           type={'password'}
           name={'password'}
           placeholder={'Enter your password'}

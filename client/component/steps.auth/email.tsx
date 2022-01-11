@@ -18,13 +18,15 @@ interface IState {
 }
 
 interface IEmail {
+  emailPost: string | undefined,
+  password: string | undefined,
   callback(data: ICallback): void;
 }
 
-const Email: FC<IEmail> = ({callback}) => {
+const Email: FC<IEmail> = ({callback, emailPost, password}) => {
   const [state, setState] = useState<IState>({
-    email: undefined,
-    password: undefined,
+    email: emailPost,
+    password: password,
     confirmed: undefined,
   })
 
@@ -62,6 +64,7 @@ const Email: FC<IEmail> = ({callback}) => {
       <div className={`flex justify-center flex-column align-center ${style.steps__content}`}>
         <Input
           classes={style.steps__input_default}
+          value={state.email}
           type={'string'}
           name={'email'}
           placeholder={'Enter your email'}
@@ -70,6 +73,7 @@ const Email: FC<IEmail> = ({callback}) => {
         />
         <Input
           classes={style.steps__input_default}
+          value={state.password}
           type={'password'}
           name={'password'}
           placeholder={'Enter your password'}

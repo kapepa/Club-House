@@ -146,7 +146,7 @@ export class AuthService {
     if (user.email?.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
-      // await this.EmailActivate(code, user.email, user.username);
+      await this.EmailActivate(code, user.email, user.username);
     } else if (user.phone?.length) {
       const existPhone = await this.ExistPhone(user);
       if (existPhone.error) return existPhone;
@@ -166,6 +166,7 @@ export class AuthService {
       : await this.userService.Create({ ...user, avatar: pathUrl, code });
 
     return { id: profile.id, message: 'success', error: false };
+    return { id: 'asdasdas', message: 'success', error: false };
   }
 
   async GoogleLogin(user: UserDto): Promise<UserDto | IRegistration> {

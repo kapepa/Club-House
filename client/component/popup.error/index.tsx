@@ -16,13 +16,13 @@ const PopupError: FC<IPopupError> = ({message, callback}) => {
 
   return (
     <div
-      className={`${style.popup_error} flex content-center align-center`}
+      className={`${style.popup_error} popup flex content-center align-center`}
       onClick={closePopup}
       data-close={true}
     >
-      <div className={`${style.popup_error__area} flex flex-column align-center`}>
+      <div className={`${style.popup_error__area} popup__area flex flex-column align-center`}>
         <div
-          className={`${style.popup_error__x} pointer`}
+          className={`popup__x pointer`}
           onClick={closePopup}
           data-close={true}
         />

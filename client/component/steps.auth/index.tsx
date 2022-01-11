@@ -109,7 +109,8 @@ const StepsAuth: FC = () => {
     const reg = await RegUser(form);
     return reg
   }
-
+  console.log(state.phone)
+  console.log(state.password)
   return (
     <div className={`flex flex-column align-center content-center flex-grow ${state.step === 4 ? '': 'flex-column'}`}>
       <div className={`${style.steps__area} flex flex-column flex-grow`}>
@@ -119,12 +120,12 @@ const StepsAuth: FC = () => {
             {state.step === 1 && <Import callback={ImportCallback}/>}
             {state.step === 2 && <People callback={PeopleCallback} username = {state.username}/>}
             {state.step === 3 && <Photo callback={PhotoCallback} avatarImage = {state.avatar}/>}
-            {state.step === 4 && <Phone callback={PhoneCallback} phoneNumber = {state.phone}/>}
+            {state.step === 4 && <Phone callback={PhoneCallback} phoneNumber = { state.phone } password={state.phone ? state.password : undefined}/>}
             {state.step === 5 && <Code callback={CodeCallback}/>}
           </div>
           {state.step === 4 && <span className={style.steps__or}>or</span>}
           {state.step === 4 && <div className={`flex justify-center flex-column ${style.steps__frame}`}>
-            <Email callback={EmailCallback}/>
+            <Email callback={EmailCallback} emailPost = {state.email} password={state.email?.length ? state.password : undefined}/>
           </div>}
         </div>
         <NavDot
