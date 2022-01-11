@@ -6,7 +6,7 @@ import { config } from "../../config";
 import {IUser} from "../../dto/user.dto";
 
 interface IImport {
-  callback(data: {next: boolean, profile?: {username: string, avatar: string, phone: string}}): void;
+  callback(data: {next: boolean, profile?: {id: string, username: string, avatar: string, phone: string}}): void;
 }
 
 const Import: FC<IImport> = ({callback}) => {
@@ -26,8 +26,8 @@ const Import: FC<IImport> = ({callback}) => {
 
   useEffect(() => {
     window.addEventListener('message', (e: MessageEvent) => {
-      const {username, avatar, phone} = e.data;
-      callback({next: true, profile: {username, avatar, phone}});
+      const {id, username, avatar, phone} = e.data;
+      callback({next: true, profile: {id, username, avatar, phone}});
     })
   },[])
 

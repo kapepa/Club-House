@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useState, useContext} from 'react';
 import style from './steps.auth.module.scss';
 import Button from "../button";
 import Link from "next/link";
@@ -18,13 +18,15 @@ interface IState {
 }
 
 interface IEmail {
+  emailPost: string | undefined,
+  password: string | undefined,
   callback(data: ICallback): void;
 }
 
-const Email: FC<IEmail> = ({callback}) => {
+const Email: FC<IEmail> = ({callback, emailPost, password}) => {
   const [state, setState] = useState<IState>({
-    email: undefined,
-    password: undefined,
+    email: emailPost,
+    password: password,
     confirmed: undefined,
   })
 
@@ -61,25 +63,30 @@ const Email: FC<IEmail> = ({callback}) => {
       </div>
       <div className={`flex justify-center flex-column align-center ${style.steps__content}`}>
         <Input
-          styleClass={style.steps__input_default}
+          classes={style.steps__input_default}
+          value={state.email}
           type={'string'}
           name={'email'}
           placeholder={'Enter your email'}
           callback={InputChange}
+          min={6}
         />
         <Input
-          styleClass={style.steps__input_default}
+          classes={style.steps__input_default}
+          value={state.password}
           type={'password'}
           name={'password'}
           placeholder={'Enter your password'}
           callback={InputChange}
+          min={6}
         />
         <Input
-          styleClass={style.steps__input_default}
+          classes={style.steps__input_default}
           type={'password'}
           name={'confirmed'}
           placeholder={'Confirmed password'}
           callback={InputChange}
+          min={6}
         />
       </div>
       <div className="flex justify-center">

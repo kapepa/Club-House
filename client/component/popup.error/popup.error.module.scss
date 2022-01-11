@@ -1,0 +1,15 @@
+.popup_error{
+  &__area{
+    max-width: 320px;
+    min-width: 250px;
+    min-height: 50px;
+  }
+  &__cap{
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+  &__content{
+    padding: 0 10px 15px 10px;
+  }
+}

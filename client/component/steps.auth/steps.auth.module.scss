@@ -1,10 +1,13 @@
 .steps{
+  &__area{
+    position: relative;
+  }
   &__frame{
     box-shadow: 0px 0px 8px 0px rgba(34, 60, 80, 0.2);
     padding: 25px 25px 20px 25px;
     border-radius: 15px;
     min-width: 320px;
-    max-width: 430px;
+    width: 370px;
     position: relative;
     &:last-child{
       margin-top: 80px;
@@ -132,5 +135,12 @@
     padding: 15px 0 20px;
     font-size: 20px;
     font-weight: bold;
+    text-align: center;
+  }
+  &__dots{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-150%, -40%);
   }
 }

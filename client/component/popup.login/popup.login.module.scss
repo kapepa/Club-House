@@ -1,0 +1,23 @@
+.popup_login{
+  &__area{
+    min-width: 250px;
+    min-height: 50px;
+    padding: 25px 35px;
+  }
+  &__cap{
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+  &__content{
+    padding: 0 10px 15px 10px;
+  }
+  &__input{
+    padding: 8px 10px;
+    min-width: 250px;
+    margin-bottom: 15px;
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
+}

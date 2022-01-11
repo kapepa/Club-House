@@ -69,6 +69,21 @@ export class AuthService {
     };
   }
 
+  async ExistPhone(user: UserDto): Promise<IRegistration> {
+    const exist = await this.userService.One('phone', user.phone);
+    if (exist && exist.code.length)
+      return {
+        id: undefined,
+        message: 'Such phone already exist!',
+        error: true,
+      };
+    return {
+      id: undefined,
+      message: 'Such phone not exist!',
+      error: false,
+    };
+  }
+
   async SMSActivate(code: string, phone: string): Promise<void> {
     const sms = new SMS(process.env.SMS_KEY_SECRET);
     const onlyNumber = phone.replace(
@@ -84,7 +99,7 @@ export class AuthService {
         text: code,
       },
       function (e) {
-        console.log(e.description);
+        throw e;
       },
     );
   }
@@ -127,15 +142,19 @@ export class AuthService {
 
   async Registration(user: UserDto): Promise<IRegistration> {
     const code: string = this.RandomCode();
-    const existEmail = await this.ExistEmail(user);
 
-    if (existEmail.error) return existEmail;
+    if (user.email?.length) {
+      const existEmail = await this.ExistEmail(user);
+      if (existEmail.error) return existEmail;
+      await this.EmailActivate(code, user.email, user.username);
+    } else if (user.phone?.length) {
+      const existPhone = await this.ExistPhone(user);
+      if (existPhone.error) return existPhone;
+      // await this.SMSActivate(code, user.phone);
+    }
+
     if (user.password.length)
       user.password = await this.BcryptHash(user.password);
-
-    user.email.length
-      ? await this.EmailActivate(code, user.email, user.username)
-      : await this.SMSActivate(code, user.phone);
 
     const pathUrl =
       typeof user.avatar === 'string'
@@ -147,6 +166,7 @@ export class AuthService {
       : await this.userService.Create({ ...user, avatar: pathUrl, code });
 
     return { id: profile.id, message: 'success', error: false };
+    return { id: 'asdasdas', message: 'success', error: false };
   }
 
   async GoogleLogin(user: UserDto): Promise<UserDto | IRegistration> {
