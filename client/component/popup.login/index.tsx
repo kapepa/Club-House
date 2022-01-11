@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import style from './popup.login.module.scss';
 import Button from "../button";
 import Input from "../input";
@@ -7,15 +7,21 @@ interface IPopupLogin {
   callback(): void,
 }
 
+interface IState{
+  login: string,
+  password: string,
+}
+
 const PopupLogin: FC<IPopupLogin> = ({callback}) => {
+  const [state, setState] = useState<IState>({} as IState)
 
   const closePopup = (e: React.MouseEvent<HTMLDivElement>) => {
     const data = (e.target as HTMLDivElement).dataset;
     if(data.hasOwnProperty('close')) callback();
   }
 
-  const InputChange = () => {
-
+  const InputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.name)
   }
 
   return (

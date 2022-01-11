@@ -8,8 +8,8 @@ interface IState {
   popup: boolean
 }
 
-const Login: FC<IState> = () => {
-  const [state, setState] = useState({
+const Login: FC = () => {
+  const [state, setState] = useState<IState>({
     popup: true,
   })
   const route = useRouter();
