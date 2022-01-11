@@ -80,7 +80,23 @@ const StepsAuth: FC = () => {
     });
   }
 
+  const checkRequiredField = ():{ error: boolean, message: string} => {
+    let template = { error: false, message: ''};
+    if(!state.username?.length) {
+      template = {error: true, message: 'Fill in the Username field '};
+      setState({...state, step: 2});
+    }
+    if(!state.phone?.length && !state.email?.length) {
+      template = {error: true, message: 'Fill in the phone or email field '};
+      setState({...state, step: 4});
+    }
+    return template;
+  }
+
   const createForm = async (): Promise<{ id: string | undefined; message: string; error: boolean }> => {
+    const check = checkRequiredField();
+    if(check.error) return { id: undefined, message: check.message, error: check.error }
+
     const form = new FormData();
     if(state.id) form.append('id', state.id);
     if(state.email) form.append('email', state.email);
