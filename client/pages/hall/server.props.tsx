@@ -1,11 +1,10 @@
 import { GetServerSideProps } from 'next'
-import { AllRooms } from "../../helpers/request";
 import Cookies from "next-cookies"
-import Axios from "../../helpers/axios";
+import ServerSideRequest from "../../helpers/server.side";
 
 
 export const HallServerSideProps: GetServerSideProps = async (context) => {
-  Axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies(context).token}`;
+  const { AllRooms } = ServerSideRequest(Cookies(context).token);
   const rooms = await AllRooms();
 
   return {

@@ -1,15 +1,6 @@
 import Axios from './axios';
 import { IRoom } from "../dto/room.dto";
 
-export const AllRooms = async (): Promise<Error | IRoom[]>  => {
-  try {
-    const rooms = await Axios.post('/room/all').then((res) => res.data)
-    return rooms;
-  } catch (e: any) {
-    return new Error(e.name);
-  }
-}
-
 export const OneRooms = async (id: string): Promise<Error | IRoom>  => {
   try {
     const room = await Axios.post(`/room/one/${id}`).then((res) => res.data)

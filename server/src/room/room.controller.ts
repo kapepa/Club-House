@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, Param, Post, Req } from '@nestjs/common';
 import { RoomService } from './room.service';
 import {
   ApiBearerAuth,
@@ -20,7 +20,8 @@ export class RoomController {
     description: 'Forbidden.',
     // type: any
   })
-  async All(): Promise<any> {
+  async All(@Req() req): Promise<any> {
+    console.log(req.headers);
     const room = await this.roomService.all();
     return room;
   }
