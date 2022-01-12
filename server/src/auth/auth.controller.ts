@@ -18,6 +18,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserDto } from '../dto/user.dto';
+import { DtoLoginReq, DtoLoginRes, DtoRegistrationRes } from './dto';
 
 @ApiBearerAuth()
 @ApiTags('auth')
@@ -33,8 +34,19 @@ export class AuthController {
   })
   async Confirmed(
     @Body() body: { id: string; code: string },
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token?: string; message: string; error: boolean }> {
+    console.log(body);
     const user = await this.authService.ConfirmedCode(body);
+    return user;
+  }
+
+  @Post('/login')
+  @ApiResponse({
+    status: 200,
+    description: 'Login and password user',
+  })
+  async Login(@Body() body: DtoLoginReq): Promise<DtoLoginRes> {
+    const user = await this.authService.Login(body);
     return user;
   }
 
@@ -47,7 +59,7 @@ export class AuthController {
   async Registration(
     @UploadedFiles() files: Array<Express.Multer.File> | string,
     @Body() body: UserDto,
-  ): Promise<{ id?: string | undefined; message: string; error: boolean }> {
+  ): Promise<DtoRegistrationRes> {
     try {
       const parseBody = { ...JSON.parse(JSON.stringify(body)) };
       const user = Object.assign(

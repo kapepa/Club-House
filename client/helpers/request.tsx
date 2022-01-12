@@ -29,9 +29,18 @@ export const RegUser = async (form: any) => {
 }
 
 export const CodeConfirmed = async (data: {id: string, code: string}) => {
-  try{
+  try {
     const confirmed = await Axios.post('/auth/confirmed', data ).then((res) => res.data);
     return confirmed;
+  } catch (e: any) {
+    return new Error(e.name);
+  }
+}
+
+export const LoginUser = async (data: {login: string, password: string}) => {
+  try {
+    const user = await Axios.post('/auth/login', data).then(res => res.data);
+    return user;
   } catch (e: any) {
     return new Error(e.name);
   }

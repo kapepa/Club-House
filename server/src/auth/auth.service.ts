@@ -7,14 +7,9 @@ import { MailerService } from '@nestjs-modules/mailer';
 import * as SMS from 'sms_ru';
 import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
+import { DtoLoginReq, DtoLoginRes, DtoRegistrationRes } from './dto';
 
 config();
-
-interface IRegistration {
-  id?: string | undefined;
-  message: string;
-  error: boolean;
-}
 
 @Injectable()
 export class AuthService {
@@ -32,20 +27,6 @@ export class AuthService {
     };
   }
 
-  async Login(username: string, pass: string): Promise<any> {
-    // const user = await this.usersService.findOne(username);
-    // if (user && user.password === pass) {
-    //   const { password, ...result } = user;
-    //   return result;
-    // }
-    // return null;
-  }
-
-  RandomCode(): string {
-    const code = Math.random() * 1000000;
-    return code.toString().substring(0, 4);
-  }
-
   async BcryptHash(password: string): Promise<string> {
     const hash = await bcrypt.hash(
       password,
@@ -54,7 +35,23 @@ export class AuthService {
     return hash;
   }
 
-  async ExistEmail(user: UserDto): Promise<IRegistration> {
+  RandomCode(): string {
+    const code = Math.random() * 1000000;
+    return code.toString().substring(0, 4);
+  }
+
+  async Login(data: DtoLoginReq): Promise<DtoLoginRes> {
+    const user = await this.userService.One(data.field, data.login);
+    if (!user) return { message: 'Such user was not found', error: true };
+
+    const match = await bcrypt.compare(data.password, user.password);
+    if (!match) return { message: 'this password is not correct', error: true };
+
+    const token = await this.CreatToken(user);
+    return { ...token, message: '', error: false };
+  }
+
+  async ExistEmail(user: UserDto): Promise<DtoRegistrationRes> {
     const exist = await this.userService.One('email', user.email);
     if (exist && exist.code.length)
       return {
@@ -69,7 +66,7 @@ export class AuthService {
     };
   }
 
-  async ExistPhone(user: UserDto): Promise<IRegistration> {
+  async ExistPhone(user: UserDto): Promise<DtoRegistrationRes> {
     const exist = await this.userService.One('phone', user.phone);
     if (exist && exist.code.length)
       return {
@@ -107,16 +104,16 @@ export class AuthService {
   async ConfirmedCode(user: {
     id: string;
     code: string;
-  }): Promise<{ access_token: string }> {
+  }): Promise<{ access_token?: string; message: string; error: boolean }> {
     const profile = await this.userService.One('id', user.id);
     if (profile.code !== user.code)
-      throw new HttpException(`This code don't correct`, HttpStatus.FORBIDDEN);
+      return { message: 'There was an error in the code', error: true };
     const complete = await this.userService.Update('id', {
       ...profile,
       isActive: true,
     });
     const token = await this.CreatToken(profile);
-    return token;
+    return { ...token, message: '', error: false };
   }
 
   async EmailActivate(
@@ -140,7 +137,7 @@ export class AuthService {
       });
   }
 
-  async Registration(user: UserDto): Promise<IRegistration> {
+  async Registration(user: UserDto): Promise<DtoRegistrationRes> {
     const code: string = this.RandomCode();
 
     if (user.email?.length) {
@@ -150,7 +147,7 @@ export class AuthService {
     } else if (user.phone?.length) {
       const existPhone = await this.ExistPhone(user);
       if (existPhone.error) return existPhone;
-      // await this.SMSActivate(code, user.phone);
+      await this.SMSActivate(code, user.phone);
     }
 
     if (user.password.length)
@@ -169,7 +166,7 @@ export class AuthService {
     return { id: 'asdasdas', message: 'success', error: false };
   }
 
-  async GoogleLogin(user: UserDto): Promise<UserDto | IRegistration> {
+  async GoogleLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
@@ -178,7 +175,7 @@ export class AuthService {
     return profile;
   }
 
-  async GithubLogin(user: UserDto): Promise<UserDto | IRegistration> {
+  async GithubLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
@@ -187,12 +184,12 @@ export class AuthService {
     return profile;
   }
 
-  async FacebookLogin(user: UserDto): Promise<UserDto | IRegistration> {
+  async FacebookLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
     }
-    console.log(user);
+    // console.log(user);
     return user;
   }
 }

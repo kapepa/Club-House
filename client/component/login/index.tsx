@@ -1,7 +1,6 @@
 import React, {FC, useState} from "react";
 import Avatar from "../avatar";
 import style from "./login.module.scss";
-import {useRouter} from "next/router";
 import PopupLogin from "../popup.login";
 
 interface IState {
@@ -10,13 +9,12 @@ interface IState {
 
 const Login: FC = () => {
   const [state, setState] = useState<IState>({
-    popup: true,
+    popup: false,
   })
-  const route = useRouter();
 
   return(
     <>
-      <div onClick={() => route.push("/profile")} className={`flex align-center pointer`}>
+      <div onClick={() => setState({...state, popup: true})} className={`flex align-center pointer`}>
         <span className={style.login__span}>Login</span>
         <Avatar/>
       </div>

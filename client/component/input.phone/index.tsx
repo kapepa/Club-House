@@ -13,7 +13,7 @@ const InputPhone: FC<IInputPhone> = ({ callback, value,classes }) => {
     <>
       <NumberFormat
         className={`${style.input_phone} ${classes ? classes : ''}`}
-        format="+38 (###) ###-##-##"
+        format="38 (###) ###-##-##"
         allowEmptyFormatting mask="_"
         onValueChange={callback}
         defaultValue={value}
