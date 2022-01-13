@@ -18,9 +18,18 @@ interface IProfile{
 const Profile: NextPage<IProfile> = ({user}) => {
   const router = useRouter();
   const {avatar, username, fullname} = user;
+
   const leaveClick = (e: React.MouseEvent<HTMLElement>) => {
     Cookie.remove('token');
     router.push('/auth');
+  }
+
+  const newNameInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    console.log(e.target.name)
+  }
+
+  const btnSetUpClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    console.log(e.currentTarget.name)
   }
 
   return (
@@ -42,18 +51,30 @@ const Profile: NextPage<IProfile> = ({user}) => {
           <div className={`${style.profile__desc}`}>
             {`Hello dear ${username} you are in your personal profile`}
           </div>
-          <div>
-            <div>
-              <Input type={'text'} name={'username'} placeholder={'New Username'} callback={() => {}} />
-              <Button name={'Set up'} alias={'username'} callback={() => {}} />
+          <div className={'flex flex-column align-center'}>
+            <div className={`${style.profile__change_row}`}>
+              <Input
+                classes={style.profile__change_input}
+                type={'text'}
+                name={'username'}
+                placeholder={'New Username'}
+                callback={newNameInput}
+              />
+              <Button name={'Set up'} alias={'username'} callback={btnSetUpClick} />
             </div>
-            <div>
-              <Input type={'text'} name={'fullname'} placeholder={'New Fullname'} callback={() => {}} />
-              <Button name={'Set up'} alias={'fullname'} callback={() => {}} />
+            <div className={`${style.profile__change_row}`}>
+              <Input
+                classes={style.profile__change_input}
+                type={'text'}
+                name={'fullname'}
+                placeholder={'New Fullname'}
+                callback={newNameInput}
+              />
+              <Button name={'Set up'} alias={'fullname'} callback={btnSetUpClick} />
             </div>
-            <div>
-              <Input type={'text'} name={'fullname'} placeholder={'New Fullname'} callback={() => {}} />
-              <Button name={'New Avatar'} alias={'avatar'} callback={() => {}} />
+            <div className={`${style.profile__change_row}`}>
+              <input type={'file'} name={'avatar'} className={'display-none'}/>
+              <Button name={'New Avatar'} alias={'avatar'} callback={btnSetUpClick} />
             </div>
           </div>
         </div>
