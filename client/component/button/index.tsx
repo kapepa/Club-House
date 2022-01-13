@@ -10,14 +10,16 @@ enum BtnStyle {
 interface IButton {
   color? : keyof typeof BtnStyle,
   name: string,
+  alias?: string
   disabled?: boolean,
   callback(e: React.MouseEvent<HTMLButtonElement>): void,
 }
 
-const Button: FC<IButton> = ({name, callback, disabled = false, color}) => {
+const Button: FC<IButton> = ({name, callback, disabled = false, color,alias}) => {
   return (
     <button
       onClick={callback}
+      name={alias}
       className={`
         ${style.btn} 
         ${color === "blue" || color === undefined? style.btn__blue : ''}

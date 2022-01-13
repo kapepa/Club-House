@@ -66,11 +66,16 @@ const StepsAuth: FC = () => {
     if(data.next) requestToServer();
   }
   const CodeCallback = (data: {next: boolean, code?: number}) => {
-    if(state.id) CodeConfirmed({id: state.id, code: String(data.code)}).then((token) => {
-      Cookies.set('token', token.access_token)
-      router.push("/hall");
+    if(state.id) CodeConfirmed({id: state.id, code: String(data.code)}).then((res:{
+      access_token?: string; message: string; error: boolean
+    }) => {
+      if(res.error) return warningPopUp(res.message);
+
+      if(!res.error && res.access_token){
+        Cookies.set('token', res.access_token)
+        router.push("/hall");
+      }
     });
-    if(data.next) requestToServer();
   }
 
   const requestToServer = (): void => {
@@ -109,8 +114,7 @@ const StepsAuth: FC = () => {
     const reg = await RegUser(form);
     return reg
   }
-  console.log(state.phone)
-  console.log(state.password)
+
   return (
     <div className={`flex flex-column align-center content-center flex-grow ${state.step === 4 ? '': 'flex-column'}`}>
       <div className={`${style.steps__area} flex flex-column flex-grow`}>

@@ -33,7 +33,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     //   user,
     //   accessToken,
     // };
-    console.log(profile);
+    // console.log(profile);
     done(null, profile);
   }
 }
