@@ -21,7 +21,15 @@ export class AuthService {
   ) {}
 
   async CreatToken(user: UserDto): Promise<{ access_token: string }> {
-    const payload = { username: user.username, sub: user.id };
+    const payload = {
+      id: user.id,
+      username: user.username,
+      fullname: user.fullname,
+      email: user.email,
+      avatar: user.avatar,
+      phone: user.phone,
+      sub: user.id,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -162,8 +170,11 @@ export class AuthService {
       ? await this.userService.Update('id', { ...user, avatar: pathUrl, code })
       : await this.userService.Create({ ...user, avatar: pathUrl, code });
 
-    return { id: profile.id, message: 'success', error: false };
-    return { id: 'asdasdas', message: 'success', error: false };
+    return {
+      id: profile.id ? profile.id : user.id,
+      message: 'success',
+      error: false,
+    };
   }
 
   async GoogleLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
@@ -189,7 +200,7 @@ export class AuthService {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
     }
-    // console.log(user);
+
     return user;
   }
 }

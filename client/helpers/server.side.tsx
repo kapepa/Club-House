@@ -9,12 +9,21 @@ const ServerSideRequest = (token: string | undefined) => {
   })
 
   return {
-    async AllRooms() : Promise<Error | IRoom[]>  {
+    async AllRooms(): Promise<Error | IRoom[]> {
       try {
         const rooms = await Axios.post('/room/all').then((res) => res.data)
         return rooms;
       } catch (e: any) {
-        return new Error(e.name);
+        throw e.name
+      }
+    },
+    async GetProfile(): Promise<any> {
+      try{
+        const user = await Axios.post('/user/own').then(res => res.data);
+        return user;
+      }
+      catch (e: any) {
+        throw e.name
       }
     }
   }

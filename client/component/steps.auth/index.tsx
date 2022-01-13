@@ -69,7 +69,8 @@ const StepsAuth: FC = () => {
     if(state.id) CodeConfirmed({id: state.id, code: String(data.code)}).then((res:{
       access_token?: string; message: string; error: boolean
     }) => {
-      if(res.error) return warningPopUp(res.message)
+      if(res.error) return warningPopUp(res.message);
+
       if(!res.error && res.access_token){
         Cookies.set('token', res.access_token)
         router.push("/hall");

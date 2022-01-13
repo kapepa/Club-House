@@ -35,7 +35,6 @@ export class AuthController {
   async Confirmed(
     @Body() body: { id: string; code: string },
   ): Promise<{ access_token?: string; message: string; error: boolean }> {
-    console.log(body);
     const user = await this.authService.ConfirmedCode(body);
     return user;
   }

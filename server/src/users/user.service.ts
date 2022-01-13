@@ -11,6 +11,13 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) {}
 
+  async Select(id: string): Promise<UserDto> {
+    const profile = await this.One('id', id);
+    const { password, isActive, code, created_at, updated_at, ...other } =
+      profile;
+    return other;
+  }
+
   async One(props: string, val: string): Promise<UserDto> {
     const profile = await this.usersRepository.findOne({
       where: { [props]: val },

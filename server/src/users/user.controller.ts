@@ -1,4 +1,12 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import {
+  Controller,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
@@ -7,6 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -15,13 +24,34 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/one/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({
     status: 200,
     description: 'Receive one user',
     type: UserDto,
   })
   async One(@Param() id: string): Promise<any> {
-    // const one = await this.userService.One();
-    return 'one user';
+    try {
+      // const one = await this.userService.One();
+      return 'one user';
+    } catch (e) {
+      throw new HttpException('One', HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Post('/own')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Getting your own user data ',
+    type: UserDto,
+  })
+  async Own(@Req() req): Promise<any> {
+    try {
+      const user = await this.userService.Select(req.user.userId);
+      return user;
+    } catch (e) {
+      throw new HttpException('Own', HttpStatus.FORBIDDEN);
+    }
   }
 }

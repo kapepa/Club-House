@@ -9,6 +9,7 @@ import { UserModule } from '../users/user.module';
 import { FileModule } from '../file/file.module';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 config();
 
@@ -22,7 +23,13 @@ config();
     UserModule,
     FileModule,
   ],
-  providers: [AuthService, GithubStrategy, GoogleStrategy, FacebookStrategy],
+  providers: [
+    AuthService,
+    GithubStrategy,
+    GoogleStrategy,
+    FacebookStrategy,
+    JwtStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
