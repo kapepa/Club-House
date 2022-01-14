@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   HttpException,
   HttpStatus,
@@ -52,6 +53,25 @@ export class UserController {
       return user;
     } catch (e) {
       throw new HttpException('Own', HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Post('/update')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Getting your own user data ',
+    type: UserDto,
+  })
+  async Update(@Req() req, @Body() body): Promise<boolean> {
+    try {
+      const update = await this.userService.Update(body.filed, {
+        id: req.user.userId,
+        [body.filed]: body.value,
+      });
+      return update ? true : false;
+    } catch (e) {
+      throw new HttpException('Update', HttpStatus.FORBIDDEN);
     }
   }
 }

@@ -12,9 +12,10 @@ interface IAvatar {
 }
 
 const Avatar: FC<IAvatar> = ({callback, size = 50, url, className}) => {
+  console.log(url)
   return (
     <>
-      {url && typeof url === 'string' ?
+      {url && typeof url === 'string' && url !== '' ?
         <img
           src={/http/.test(url) ? url : `${config.url}/${url}`}
           alt="avatar"
@@ -23,7 +24,7 @@ const Avatar: FC<IAvatar> = ({callback, size = 50, url, className}) => {
           className={`${style.avatar__image} ${callback ? style.avatar__pointer : '' } ${className ? className : ''}`}
           onClick={callback}
         /> : '' }
-      { url === undefined ?
+      { url === undefined || url === '' ?
         <Image
           src={ DefaultAvatar }
           alt="default avatar"

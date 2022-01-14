@@ -37,6 +37,7 @@ export class UserService {
   }
 
   async Update(props: string, user: UserDto): Promise<any> {
+    console.log(props, user);
     const { id, ...rest } = user;
     const profile = await this.One('id', user.id);
     if (!profile)

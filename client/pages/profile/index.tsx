@@ -1,4 +1,4 @@
-import React from "react";
+import React, {HTMLAttributes, useState} from "react";
 import {useRouter} from "next/router";
 import {NextPage} from "next";
 import Cookie from "js-cookie"
@@ -9,27 +9,40 @@ import Button from "../../component/button";
 import {ProfileServerSideProps} from "./server.props";
 import {IUser} from "../../dto/user.dto";
 import Input from "../../component/input";
+import Regexp from "../../helpers/regexp";
+import {UpdateUser} from "../../helpers/request";
+import {any} from "prop-types";
 
 
-interface IProfile{
+interface IProfile {
   user: IUser
 }
 
+interface IState {
+  username: string | undefined,
+  fullname: string | undefined,
+  avatar: File | undefined,
+}
+
 const Profile: NextPage<IProfile> = ({user}) => {
+  const [state, setState] = useState<IState>({} as IState)
   const router = useRouter();
   const {avatar, username, fullname} = user;
 
-  const leaveClick = (e: React.MouseEvent<HTMLElement>) => {
+  const leaveClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     Cookie.remove('token');
     router.push('/auth');
   }
 
   const newNameInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target.name)
+    if(state.hasOwnProperty(e.target.name)) setState({...state, [e.target.name]: e.target.value});
   }
 
-  const btnSetUpClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    console.log(e.currentTarget.name)
+  const btnSetUpClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = (e.target.name as keyof IState);
+    if(state[name]) UpdateUser({filed: e.currentTarget.name, value: state[name]}).then(res => {
+      console.log(res)
+    })
   }
 
   return (
@@ -45,7 +58,11 @@ const Profile: NextPage<IProfile> = ({user}) => {
               <span className={`${style.profile__span}`}>{fullname}</span>
             </div>
             <div className={`${style.profile__cell}`}>
-              <Button name={"Leave"} callback={leaveClick} color={"frame"}/>
+              <Button
+                name={"Leave"}
+                callback={leaveClick}
+                color={"frame"}
+              />
             </div>
           </div>
           <div className={`${style.profile__desc}`}>
@@ -60,7 +77,11 @@ const Profile: NextPage<IProfile> = ({user}) => {
                 placeholder={'New Username'}
                 callback={newNameInput}
               />
-              <Button name={'Set up'} alias={'username'} callback={btnSetUpClick} />
+              <Button
+                name={'Set up'}
+                alias={'username'} callback={btnSetUpClick}
+                disabled={!(state.username && Regexp.name.test(state.username))}
+              />
             </div>
             <div className={`${style.profile__change_row}`}>
               <Input
@@ -70,7 +91,12 @@ const Profile: NextPage<IProfile> = ({user}) => {
                 placeholder={'New Fullname'}
                 callback={newNameInput}
               />
-              <Button name={'Set up'} alias={'fullname'} callback={btnSetUpClick} />
+              <Button
+                name={'Set up'}
+                alias={'fullname'}
+                callback={btnSetUpClick}
+                disabled={!(state.fullname && Regexp.name.test(state.fullname))}
+              />
             </div>
             <div className={`${style.profile__change_row}`}>
               <input type={'file'} name={'avatar'} className={'display-none'}/>

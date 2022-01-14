@@ -2,9 +2,9 @@ export class UserDto {
   id?: string;
   email?: string;
   password?: string;
-  username: string;
-  fullname: string;
-  avatar: string;
+  username?: string;
+  fullname?: string;
+  avatar?: string;
   isActive?: boolean;
   phone?: string;
   code?: string;
