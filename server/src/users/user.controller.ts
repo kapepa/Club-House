@@ -1,21 +1,20 @@
 import {
+  Body,
   Controller,
   HttpException,
   HttpStatus,
   Param,
   Post,
   Req,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -53,5 +52,40 @@ export class UserController {
     } catch (e) {
       throw new HttpException('Own', HttpStatus.FORBIDDEN);
     }
+  }
+
+  @Post('/update')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Getting your own user data ',
+    type: UserDto,
+  })
+  async Update(@Req() req, @Body() body): Promise<{ access_token: string }> {
+    try {
+      return await this.userService.UpdateUser(req.user.userId, body);
+    } catch (e) {
+      throw new HttpException('Update', HttpStatus.FORBIDDEN);
+    }
+  }
+
+  @Post('/avatar')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Update user avatar ',
+    type: UserDto,
+  })
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  async UpdateAvatar(
+    @Req() req,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ): Promise<{ access_token: string }> {
+    const file = JSON.parse(JSON.stringify(files));
+    const update = await this.userService.UpdateAvatar(
+      req.user.userId,
+      file.avatar[0],
+    );
+    return update;
   }
 }
