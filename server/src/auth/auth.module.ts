@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
@@ -20,8 +20,8 @@ config();
       signOptions: { expiresIn: '30d' },
     }),
     PassportModule,
-    UserModule,
     FileModule,
+    forwardRef(() => UserModule),
   ],
   providers: [
     AuthService,
@@ -31,5 +31,6 @@ config();
     JwtStrategy,
   ],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

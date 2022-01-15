@@ -1,4 +1,4 @@
-import React, {HTMLAttributes, useState} from "react";
+import React, {HTMLAttributes, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import {NextPage} from "next";
 import Cookie from "js-cookie"
@@ -10,9 +10,7 @@ import {ProfileServerSideProps} from "./server.props";
 import {IUser} from "../../dto/user.dto";
 import Input from "../../component/input";
 import Regexp from "../../helpers/regexp";
-import {UpdateUser} from "../../helpers/request";
-import {any} from "prop-types";
-
+import {UpdateAvatar, UpdateUser} from "../../helpers/request";
 
 interface IProfile {
   user: IUser
@@ -21,13 +19,15 @@ interface IProfile {
 interface IState {
   username: string | undefined,
   fullname: string | undefined,
-  avatar: File | undefined,
+  avatar: string | File | undefined,
 }
 
 const Profile: NextPage<IProfile> = ({user}) => {
-  const [state, setState] = useState<IState>({} as IState)
   const router = useRouter();
-  const {avatar, username, fullname} = user;
+  const [profile, setProfile] = useState<IUser>(user)
+  const [state, setState] = useState<IState>({} as IState)
+  const {avatar, username, fullname} = profile;
+  const inputFileRef = useRef<HTMLInputElement>() as React.MutableRefObject<HTMLInputElement>;;
 
   const leaveClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     Cookie.remove('token');
@@ -35,25 +35,55 @@ const Profile: NextPage<IProfile> = ({user}) => {
   }
 
   const newNameInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if(state.hasOwnProperty(e.target.name)) setState({...state, [e.target.name]: e.target.value});
+    setState({...state, [e.target.name as keyof IState]: e.target.value});
   }
+
+  const btnChoiceAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setState({...state, avatar: undefined})
+    inputFileRef.current.click()
+  };
 
   const btnSetUpClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = (e.target.name as keyof IState);
-    if(state[name]) UpdateUser({filed: e.currentTarget.name, value: state[name]}).then(res => {
-      console.log(res)
+    if(state[name]) UpdateUser({filed: e.currentTarget.name, value: state[name]}).then((res: {access_token: string}) => {
+      if(res.access_token){
+        setProfile({...profile, [name]: state[name]});
+        setCookie(res.access_token)
+      }
     })
   }
 
+  const avatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = ( e.target.files as FileList )[0];
+
+    avatarForm(file).then((res:{access_token: string}) => {
+      if(res.access_token){
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {if(reader.result) setProfile({...profile, avatar: reader.result})};
+        setCookie(res.access_token);
+      }
+    })
+  }
+
+  const avatarForm = async (file: File): Promise<{access_token: string}> => {
+    const form = new FormData();
+    form.append('avatar', file);
+    return UpdateAvatar(form)
+  }
+
+  const setCookie = (cookie: string) => Cookie.set('token',cookie);
+
+
   return (
-    <BaseWrapper title={"Profile"} description={"weclcome to home page"} userContext={user}>
+    <BaseWrapper title={"Profile"} description={"weclcome to home page"} userContext={profile}>
       <div className={`flex-grow flex justify-center align-center flex-column`}>
         <div className={`${style.profile}`}>
           <div className={`${style.profile__frame} flex align-center`}>
             <div className={`${style.profile__cell}`}>
               <Avatar size={65} url={avatar}/>
             </div>
-            <div className={`${style.profile__cell}`}>
+            <div className={`${style.profile__cell} flex-grow`}>
               <h5 className={`${style.profile__h5}`}>{username}</h5>
               <span className={`${style.profile__span}`}>{fullname}</span>
             </div>
@@ -99,8 +129,14 @@ const Profile: NextPage<IProfile> = ({user}) => {
               />
             </div>
             <div className={`${style.profile__change_row}`}>
-              <input type={'file'} name={'avatar'} className={'display-none'}/>
-              <Button name={'New Avatar'} alias={'avatar'} callback={btnSetUpClick} />
+              <input
+                ref={inputFileRef}
+                type={'file'}
+                name={'avatar'}
+                className={'display-none'}
+                onChange={avatarChange}
+              />
+              <Button name={'Set Avatar'} alias={'avatar'} callback={btnChoiceAvatarClick} />
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ interface IUser {
   password?: string;
   username: string;
   fullname: string;
-  avatar: string;
+  avatar: string | ArrayBuffer;
   isActive?: boolean;
   phone: string;
   code?: string;

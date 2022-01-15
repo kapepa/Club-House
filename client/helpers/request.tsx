@@ -46,3 +46,12 @@ export const UpdateUser = async (data: {filed: string, value: string | File | un
   }
 }
 
+export const UpdateAvatar = async (form: any) => {
+  try {
+    const user = await Axios.post('/user/avatar', form).then(res => res.data);
+    return user;
+  } catch (e: any){
+    throw e.name
+  }
+}
+
