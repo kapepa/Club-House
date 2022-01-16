@@ -1,0 +1,83 @@
+.popup_room{
+  &__area{
+    min-width: 250px;
+    min-height: 50px;
+    padding: 25px 35px;
+  }
+  &__cap{
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+  &__content{
+    padding: 0 10px 10px 10px;
+  }
+  &__input{
+    padding: 8px 0px;
+    min-width: 250px;
+    border: none;
+    background-color: transparent;
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
+  &__type{
+    display: block;
+    padding-bottom: 12px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  &__start{
+    display: block;
+    padding: 10px 0;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  &__choice{
+    width: 100%;
+    padding-bottom: 5px;
+  }
+  &__options{
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    padding: 88px 0 15px 0;
+    transition: background-color .5s linear;
+    border-radius: 10px;
+    &::after{
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      height: 65px;
+      background-color: antiquewhite;
+      background-size: 75%;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      border-radius: 50%;
+    }
+  }
+  &__earth{
+    &::after{
+      background-image: url("../../public/jpg/earth.png");
+    }
+  }
+  &__sociable{
+    &::after{
+      background-image: url("../../public/jpg/sociable.jpg");
+      background-size: 70%;
+    }
+  }
+  &__lock{
+    &::after{
+      background-image: url("../../public/jpg/lock.png");
+      background-size: 70%;
+    }
+  }
+  &__active{
+    background-color: rgb(0,0,0, 0.25);
+  }
+}
