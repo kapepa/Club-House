@@ -30,9 +30,9 @@ export class RoomService {
     const createRoom = this.roomRepository.create();
     createRoom.title = room.title;
     createRoom.speaker = [user];
-    await this.roomRepository.save(createRoom);
+    const roomSave = await this.roomRepository.save(createRoom);
 
-    return 'dsa';
+    return roomSave.id;
   }
 
   async Update(): Promise<any> {}

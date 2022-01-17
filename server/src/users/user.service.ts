@@ -30,10 +30,11 @@ export class UserService {
     return other;
   }
 
-  async One(props: string, val: string): Promise<UserDto> {
-    const profile = await this.usersRepository.findOne({
-      where: { [props]: val },
-    });
+  async One(props: string, val: string, relation?: string): Promise<UserDto> {
+    const looking = relation.length
+      ? { where: { [props]: val }, relations: [relation] }
+      : { where: { [props]: val } };
+    const profile = await this.usersRepository.findOne(looking);
     return profile;
   }
 
