@@ -1,4 +1,4 @@
-import { Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RoomService } from './room.service';
 import {
   ApiBearerAuth,
@@ -7,6 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { DtoRoom } from '../dto/room.dto';
 
 @ApiBearerAuth()
 @ApiTags('room')
@@ -19,11 +20,11 @@ export class RoomController {
   @ApiOperation({ summary: 'Receive all rooms' })
   @ApiResponse({
     status: 200,
-    description: 'Forbidden.',
-    // type: any
+    description: 'Get all room',
+    type: DtoRoom,
   })
-  async All(@Req() req): Promise<any> {
-    const room = await this.roomService.all();
+  async All(@Req() req): Promise<DtoRoom[]> {
+    const room = await this.roomService.All();
     return room;
   }
 
@@ -32,11 +33,26 @@ export class RoomController {
   @ApiOperation({ summary: 'Receive one room on id' })
   @ApiResponse({
     status: 200,
-    description: 'Forbidden.',
-    // type: any
+    description: 'Get one room',
+    type: DtoRoom,
   })
-  async One(@Param('id') id: string): Promise<any> {
-    const room = await this.roomService.one(id);
+  async One(@Param('id') id: string): Promise<DtoRoom> {
+    const room = await this.roomService.One(id);
     return room;
+  }
+
+  @Post('/create')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Create new room',
+    type: DtoRoom,
+  })
+  async Create(
+    @Req() req,
+    @Body() body: { title: string; type: string },
+  ): Promise<string> {
+    const room = await this.roomService.Create(req.user.userId, body);
+    return 'sas';
   }
 }

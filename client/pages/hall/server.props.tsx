@@ -11,7 +11,9 @@ export const HallServerSideProps: GetServerSideProps =  wrapper.getServerSidePro
 
     if(!Object.keys(store.getState().user).length) await store.dispatch(setUser(await GetProfile()));
 
+
     const user = store.getState().user;
+
 
     if(!token || !Object.keys(user).length) return {redirect: { permanent: false, destination: "/auth" }};
 

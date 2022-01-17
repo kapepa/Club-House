@@ -19,6 +19,7 @@ import { User } from '../users/user.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserDto } from '../dto/user.dto';
 import { DtoLoginReq, DtoLoginRes, DtoRegistrationRes } from './dto';
+import { DtoRoom } from '../dto/room.dto';
 
 @ApiBearerAuth()
 @ApiTags('auth')

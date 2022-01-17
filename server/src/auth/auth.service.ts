@@ -14,6 +14,7 @@ import * as SMS from 'sms_ru';
 import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 import { DtoLoginReq, DtoLoginRes, DtoRegistrationRes } from './dto';
+import { DtoProfile } from '../users/dto';
 
 config();
 
@@ -66,7 +67,7 @@ export class AuthService {
     return { ...token, message: '', error: false };
   }
 
-  async ExistEmail(user: UserDto): Promise<DtoRegistrationRes> {
+  async ExistEmail(user: DtoProfile): Promise<DtoRegistrationRes> {
     const exist = await this.userService.One('email', user.email);
     if (exist && exist.code.length)
       return {
@@ -184,7 +185,9 @@ export class AuthService {
     };
   }
 
-  async GoogleLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
+  async GoogleLogin(
+    user: DtoProfile,
+  ): Promise<DtoProfile | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
@@ -193,7 +196,9 @@ export class AuthService {
     return profile;
   }
 
-  async GithubLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
+  async GithubLogin(
+    user: DtoProfile,
+  ): Promise<DtoProfile | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
@@ -202,7 +207,9 @@ export class AuthService {
     return profile;
   }
 
-  async FacebookLogin(user: UserDto): Promise<UserDto | DtoRegistrationRes> {
+  async FacebookLogin(
+    user: DtoProfile,
+  ): Promise<DtoProfile | DtoRegistrationRes> {
     if (user.email.length) {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;

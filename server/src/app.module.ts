@@ -4,6 +4,7 @@ import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
+import { Room } from './room/room.entyty';
 import { config } from 'dotenv';
 import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -22,7 +23,7 @@ config();
         transport: {
           service: 'gmail',
           host: 'smtp.gmail.com',
-          secure: false, // upgrade later with STARTTLS
+          secure: false,
           auth: {
             user: process.env.MAILDEV_INCOMING_USER,
             pass: process.env.MAILDEV_INCOMING_PASS,
@@ -37,7 +38,7 @@ config();
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      entities: [User],
+      entities: [User, Room],
       synchronize: true,
     }),
     RoomModule,

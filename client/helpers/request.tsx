@@ -54,4 +54,12 @@ export const UpdateAvatar = async (form: any) => {
     throw e.name
   }
 }
+export const CreateRoom = async (room: { title: string; type: string }) => {
+  try{
+    const newRoom = await Axios.post('/room/create', room).then(res => res.data);
+    return newRoom;
+  }catch (e: any){
+    throw e.name
+  }
+}
 
