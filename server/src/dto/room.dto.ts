@@ -6,8 +6,10 @@ export class DtoRoom {
   id: string;
   @ApiProperty({ description: 'Name room' })
   title: string;
+  @ApiProperty({ description: 'type room' })
+  type: string;
   @ApiProperty({ description: 'total count message in room' })
-  message: string;
+  message: number;
   @ApiProperty({ description: 'total user in room' })
   people: number;
   @ApiProperty({ description: 'Speaker in room' })

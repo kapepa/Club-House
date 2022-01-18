@@ -24,13 +24,13 @@ export class User {
   @IsString()
   id: string;
 
-  @Column({ default: '' })
+  @Column({ default: '', select: false })
   @IsEmail({
     message: 'email is not proper',
   })
   email: string;
 
-  @Column({ default: '' })
+  @Column({ default: '', select: false })
   @IsString({
     message: 'password is not proper',
   })
@@ -55,17 +55,17 @@ export class User {
   @IsString()
   avatar: string;
 
-  @Column({ default: false })
+  @Column({ default: false, select: false })
   @IsBoolean()
   isActive: boolean;
 
-  @Column({ default: '' })
+  @Column({ default: '', select: false })
   @IsPhoneNumber('IN', {
     message: 'phone number is not valid',
   })
   phone: string;
 
-  @Column({ default: '' })
+  @Column({ default: '', select: false })
   @Length(4, 4, {
     message: 'incorrect confirmation code set ',
   })
@@ -74,11 +74,11 @@ export class User {
   @ManyToMany(() => Room, (room) => room.speaker)
   rooms: Room[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   @IsDate()
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   @IsDate()
   updated_at: Date;
 }

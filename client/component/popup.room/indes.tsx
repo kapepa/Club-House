@@ -1,4 +1,5 @@
 import React, {FC, useState} from "react";
+import { useRouter } from 'next/router'
 import style from "./popup.room.module.scss";
 import Input from "../input";
 import Button from "../button";
@@ -19,6 +20,7 @@ interface IState {
 }
 
 const PopupRoom: FC<IPopupRoom> = ({callback}) => {
+  const router = useRouter();
   const [state, setState] = useState<IState>({} as IState);
   const closePopup = (e: React.MouseEvent<HTMLDivElement>) => {
     const data = (e.target as HTMLDivElement).dataset;
@@ -30,8 +32,8 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
   }
 
   const clickCreate = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    CreateRoom(state).then(res => {
-      console.log(res);
+    CreateRoom(state).then((idRoom: string) => {
+      router.push(`/room/${idRoom}`)
     })
   }
 
@@ -46,7 +48,7 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
           className={`popup__x`}
           onClick={closePopup}
           data-close={true}
-        ></div>
+        />
         <div className={style.popup_room__cap}>Topic</div>
         <div className={`${style.popup_room__content} flex flex-column`}>
           <Input

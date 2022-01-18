@@ -37,7 +37,7 @@ export class RoomController {
     type: DtoRoom,
   })
   async One(@Param('id') id: string): Promise<DtoRoom> {
-    const room = await this.roomService.One(id);
+    const room = await this.roomService.One('id', id, 'speaker');
     return room;
   }
 
@@ -53,6 +53,6 @@ export class RoomController {
     @Body() body: { title: string; type: string },
   ): Promise<string> {
     const room = await this.roomService.Create(req.user.userId, body);
-    return 'sas';
+    return room.id;
   }
 }

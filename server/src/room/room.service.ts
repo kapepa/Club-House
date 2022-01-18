@@ -13,26 +13,32 @@ export class RoomService {
     private userService: UserService,
   ) {}
 
-  async All(): Promise<any> {
-    return [];
+  async All(): Promise<DtoRoom[]> {
+    const rooms = await this.roomRepository.find({
+      relations: ['speaker'],
+    });
+    return rooms;
   }
 
-  async One(id: string): Promise<any> {
-    // const index = list.findIndex((room) => room.id === id);
-    return [];
+  async One(props: string, val: string, relation?: string): Promise<DtoRoom> {
+    const looking = relation
+      ? { where: { [props]: val }, relations: [relation] }
+      : { where: { [props]: val } };
+    const room = await this.roomRepository.findOne(looking);
+    return room;
   }
 
   async Create(
     id: string,
     room: { title: string; type: string },
-  ): Promise<any> {
+  ): Promise<DtoRoom> {
     const user = await this.userService.One('id', id);
     const createRoom = this.roomRepository.create();
     createRoom.title = room.title;
+    createRoom.type = room.type;
     createRoom.speaker = [user];
     const roomSave = await this.roomRepository.save(createRoom);
-
-    return roomSave.id;
+    return roomSave;
   }
 
   async Update(): Promise<any> {}

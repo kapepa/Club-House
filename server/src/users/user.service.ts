@@ -31,7 +31,7 @@ export class UserService {
   }
 
   async One(props: string, val: string, relation?: string): Promise<UserDto> {
-    const looking = relation.length
+    const looking = relation
       ? { where: { [props]: val }, relations: [relation] }
       : { where: { [props]: val } };
     const profile = await this.usersRepository.findOne(looking);

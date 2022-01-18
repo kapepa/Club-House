@@ -8,7 +8,7 @@ interface IHallPanell {
 }
 
 const HallPanell: FC<IHallPanell> = ({title}) => {
-  const [popup, setPopup] = useState<boolean>(true);
+  const [popup, setPopup] = useState<boolean>(false);
 
   const ClickCreateRoom = (e: React.MouseEvent<HTMLButtonElement>): void => setPopup(true);
   const ClickClosePopupRoom = (): void => setPopup(false);

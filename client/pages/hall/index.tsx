@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from "react";
-import style from "./hall.module.scss";
+import style from "../../component/hall.module.scss";
 import { InferGetServerSidePropsType, NextPage} from "next";
 import BaseWrapper, {UserContext} from "../../layout/base.wrapper";
 import HallPanell from "../../component/hall.panell";

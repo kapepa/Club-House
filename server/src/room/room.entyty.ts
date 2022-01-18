@@ -22,6 +22,9 @@ export class Room {
   })
   title: string;
 
+  @Column({ default: 'open' })
+  type: string;
+
   @Column({ default: 0 })
   @IsNumber()
   message: number;
@@ -34,11 +37,11 @@ export class Room {
   @JoinTable()
   speaker: User[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   @IsDate()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   @IsDate()
   updateAt: Date;
 }

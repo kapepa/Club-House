@@ -10,10 +10,9 @@ interface IRoomPage {
   rooms: IRoom,
 };
 
-const Room: NextPage<IRoomPage> = ({room}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log(room)
+const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <BaseWrapper title={room.title} description={`weclcome to room page ${room.title}`}>
+    <BaseWrapper title={room.title} description={`weclcome to room page ${room.title}`} userContext={user}>
       <div className={`flex flex-column ${style.room}`}>
         <div className={style.room__title}>
           <h4 className={style.room__h4}>{room.title}</h4>

@@ -1,14 +1,13 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {HYDRATE} from "next-redux-wrapper";
-import {IUser} from "../dto/user.dto";
+import {IUser} from "../../dto/user.dto";
 
 export const userSlice = createSlice({
   name: 'user',
   initialState: {} as IUser,
-
   reducers: {
     setUser(state, action) {
-      return action.payload;
+      return state = action.payload;
     },
   },
 
@@ -16,7 +15,7 @@ export const userSlice = createSlice({
     [HYDRATE]: (state, action) => {
       return {
         ...state,
-        ...action.payload,
+        ...action.payload.user,
       };
     },
   },
