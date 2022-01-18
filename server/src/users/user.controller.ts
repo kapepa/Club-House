@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   HttpException,
   HttpStatus,
@@ -24,6 +25,7 @@ export class UserController {
 
   @Post('/one/:id')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({
     status: 200,
     description: 'Receive one user',
@@ -31,8 +33,8 @@ export class UserController {
   })
   async One(@Param() id: string): Promise<any> {
     try {
-      // const one = await this.userService.One();
-      return 'one user';
+      const user = await this.userService.One('id', id);
+      return user;
     } catch (e) {
       throw new HttpException('One', HttpStatus.FORBIDDEN);
     }
@@ -40,6 +42,7 @@ export class UserController {
 
   @Post('/own')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiResponse({
     status: 200,
     description: 'Getting your own user data ',

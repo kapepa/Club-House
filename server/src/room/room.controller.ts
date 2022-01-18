@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RoomService } from './room.service';
 import {
   ApiBearerAuth,
@@ -17,6 +26,7 @@ export class RoomController {
 
   @Post('/all')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: 'Receive all rooms' })
   @ApiResponse({
     status: 200,

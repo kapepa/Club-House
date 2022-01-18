@@ -17,6 +17,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Room } from '../room/room.entyty';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -24,19 +25,21 @@ export class User {
   @IsString()
   id: string;
 
-  @Column({ default: '', select: false })
+  @Column({ default: '' })
   @IsEmail({
     message: 'email is not proper',
   })
+  @Exclude({ toPlainOnly: true })
   email: string;
 
-  @Column({ default: '', select: false })
+  @Column({ default: '' })
   @IsString({
     message: 'password is not proper',
   })
   @MinLength(6, {
     message: 'short password',
   })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column()
@@ -55,20 +58,23 @@ export class User {
   @IsString()
   avatar: string;
 
-  @Column({ default: false, select: false })
+  @Column({ default: false })
   @IsBoolean()
+  @Exclude({ toPlainOnly: true })
   isActive: boolean;
 
-  @Column({ default: '', select: false })
+  @Column({ default: '' })
   @IsPhoneNumber('IN', {
     message: 'phone number is not valid',
   })
+  @Exclude({ toPlainOnly: true })
   phone: string;
 
-  @Column({ default: '', select: false })
+  @Column({ default: '' })
   @Length(4, 4, {
     message: 'incorrect confirmation code set ',
   })
+  @Exclude({ toPlainOnly: true })
   code: string;
 
   @ManyToMany(() => Room, (room) => room.speaker)
@@ -76,9 +82,11 @@ export class User {
 
   @CreateDateColumn({ select: false })
   @IsDate()
+  @Exclude({ toPlainOnly: true })
   created_at: Date;
 
   @UpdateDateColumn({ select: false })
   @IsDate()
+  @Exclude({ toPlainOnly: true })
   updated_at: Date;
 }

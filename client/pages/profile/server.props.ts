@@ -9,11 +9,11 @@ export const ProfileServerSideProps: GetServerSideProps = wrapper.getServerSideP
     const token = Cookies(context).token;
     const { GetProfile } = ServerSideRequest(token);
 
+    if(!token) return {redirect: { permanent: false, destination: "/auth" }};
     if(!Object.keys(store.getState().user).length) await store.dispatch(setUser(await GetProfile()));
+    if(!Object.keys(store.getState().user).length) return {redirect: { permanent: false, destination: "/auth" }};
 
     const user = store.getState().user;
-
-    if(!token || !Object.keys(user).length) return {redirect: { permanent: false, destination: "/auth" }};
 
     return {
       props: { user }
