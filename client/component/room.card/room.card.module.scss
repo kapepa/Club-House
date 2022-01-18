@@ -12,20 +12,22 @@
     min-width: 45px;
   }
   &__image{
-    background-color: #0070f3;
-    &:nth-child(2){
+    &>:nth-child(1){
+      transform: translateY(0);
+    }
+    &>img:nth-child(2){
       transform: translateY(-50%);
     }
-    &:nth-child(3){
+    &>img:nth-child(3){
       transform: translateY(-100%);
     }
-    &:nth-child(4){
+    &>img:nth-child(4){
       transform: translateY(-150%);
     }
-    &:nth-child(5){
+    &>img:nth-child(5){
       transform: translateY(-200%);
     }
-    &:nth-child(even){
+    &>img:nth-child(even){
       align-self: flex-end;
     }
   }

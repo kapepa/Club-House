@@ -1,15 +1,6 @@
 import Axios from './axios';
 import { IRoom } from "../dto/room.dto";
 
-export const OneRooms = async (id: string): Promise<Error | IRoom>  => {
-  try {
-    const room = await Axios.post(`/room/one/${id}`).then((res) => res.data)
-    return room;
-  } catch (e: any) {
-    throw e.name
-  }
-}
-
 export const RegUser = async (form: any) => {
   try {
     const user = await Axios.post('/auth/registration', form ).then((res) => res.data);
@@ -51,6 +42,14 @@ export const UpdateAvatar = async (form: any) => {
     const user = await Axios.post('/user/avatar', form).then(res => res.data);
     return user;
   } catch (e: any){
+    throw e.name
+  }
+}
+export const CreateRoom = async (room: { title: string; type: string }) => {
+  try{
+    const newRoom = await Axios.post('/room/create', room).then(res => res.data);
+    return newRoom;
+  }catch (e: any){
     throw e.name
   }
 }

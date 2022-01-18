@@ -1,6 +1,7 @@
 import axios from "axios";
 import { config } from "../config";
 import {IRoom} from "../dto/room.dto";
+import {IUser} from "../dto/user.dto";
 
 const ServerSideRequest = (token: string | undefined) => {
   const Axios = axios.create({
@@ -17,12 +18,20 @@ const ServerSideRequest = (token: string | undefined) => {
         throw e.name
       }
     },
-    async GetProfile(): Promise<any> {
+    async GetProfile(): Promise<IUser> {
       try{
         const user = await Axios.post('/user/own').then(res => res.data);
         return user;
       }
       catch (e: any) {
+        throw e.name
+      }
+    },
+    async OneRoom (id: string | string[]): Promise<IRoom> {
+      try {
+        const room = await Axios.post(`/room/one/${id}`).then(res => res.data);
+        return room;
+      }catch (e:any){
         throw e.name
       }
     }

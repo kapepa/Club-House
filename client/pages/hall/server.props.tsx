@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next'
 import Cookies from "next-cookies"
 import ServerSideRequest from "../../helpers/server.side";
 import {wrapper} from "../../redux/store";
-import {setUser} from "../../redux/action";
+import {setUser} from "../../redux/user/userAction";
 
 export const HallServerSideProps: GetServerSideProps =  wrapper.getServerSideProps(store => async (context) => {
   try {

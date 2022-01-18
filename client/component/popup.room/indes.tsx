@@ -1,7 +1,10 @@
 import React, {FC, useState} from "react";
+import { useRouter } from 'next/router'
 import style from "./popup.room.module.scss";
 import Input from "../input";
 import Button from "../button";
+import Regexp from "../../helpers/regexp";
+import {CreateRoom} from "../../helpers/request";
 
 interface IPopupRoom {
   callback(): void,
@@ -12,11 +15,12 @@ enum EType {
 }
 
 interface IState {
-  name: string,
+  title: string,
   type: keyof typeof EType,
 }
 
 const PopupRoom: FC<IPopupRoom> = ({callback}) => {
+  const router = useRouter();
   const [state, setState] = useState<IState>({} as IState);
   const closePopup = (e: React.MouseEvent<HTMLDivElement>) => {
     const data = (e.target as HTMLDivElement).dataset;
@@ -24,11 +28,13 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
   }
 
   const InputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(e.target.name === 'name') setState({...state, name: e.target.value})
+    if(e.target.name === 'name') setState({...state, title: e.target.value})
   }
 
   const clickCreate = (e: React.MouseEvent<HTMLButtonElement>): void => {
-
+    CreateRoom(state).then((idRoom: string) => {
+      router.push(`/room/${idRoom}`)
+    })
   }
 
   return (
@@ -42,7 +48,7 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
           className={`popup__x`}
           onClick={closePopup}
           data-close={true}
-        ></div>
+        />
         <div className={style.popup_room__cap}>Topic</div>
         <div className={`${style.popup_room__content} flex flex-column`}>
           <Input
@@ -84,7 +90,7 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
           >Closed</div>
         </div>
         <span className={`${style.popup_room__start}`}>Start a room open to everyone</span>
-        <Button name={`Let's go`} callback={clickCreate} color={'green'}/>
+        <Button name={`Let's go`} callback={clickCreate} color={'green'} disabled={!Regexp.title.test(state.title)}/>
       </div>
     </div>
   )

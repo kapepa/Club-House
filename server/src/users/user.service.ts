@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { UserDto } from '../dto/user.dto';
 import { FileService } from '../file/file.service';
 import { AuthService } from '../auth/auth.service';
+import { DtoProfile } from './dto';
 
 @Injectable()
 export class UserService {
@@ -22,21 +23,22 @@ export class UserService {
     private fileService: FileService,
   ) {}
 
-  async Select(id: string): Promise<UserDto> {
+  async Select(id: string): Promise<DtoProfile> {
     const profile = await this.One('id', id);
     const { password, isActive, code, created_at, updated_at, ...other } =
       profile;
     return other;
   }
 
-  async One(props: string, val: string): Promise<UserDto> {
-    const profile = await this.usersRepository.findOne({
-      where: { [props]: val },
-    });
+  async One(props: string, val: string, relation?: string): Promise<UserDto> {
+    const looking = relation
+      ? { where: { [props]: val }, relations: [relation] }
+      : { where: { [props]: val } };
+    const profile = await this.usersRepository.findOne(looking);
     return profile;
   }
 
-  async Create(user: UserDto): Promise<UserDto> {
+  async Create(user: DtoProfile): Promise<UserDto> {
     const create = await this.usersRepository.create(user);
     const profile = await this.usersRepository.save(create);
     return profile;
@@ -47,7 +49,7 @@ export class UserService {
     return profile ? true : false;
   }
 
-  async Update(criteria: string, user: UserDto): Promise<any> {
+  async Update(criteria: string, user: DtoProfile): Promise<any> {
     const { id, ...rest } = user;
     const update = await this.usersRepository
       .update({ [criteria]: user[criteria] }, { ...rest })
