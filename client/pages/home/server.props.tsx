@@ -1,13 +1,13 @@
-import { GetServerSideProps } from 'next'
-import Cookies from "next-cookies"
-import ServerSideRequest from "../../helpers/server.side";
+import {GetServerSideProps} from "next";
 import {wrapper} from "../../redux/store";
+import Cookies from "next-cookies";
+import ServerSideRequest from "../../helpers/server.side";
 import {setUser} from "../../redux/user/userAction";
 
-export const HallServerSideProps: GetServerSideProps =  wrapper.getServerSideProps(store => async (context) => {
-  try {
+export const HomeServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async (context) => {
+  try{
     const token = Cookies(context).token;
-    const { AllRooms, GetProfile } = ServerSideRequest(token);
+    const { GetProfile } = ServerSideRequest(token);
 
     if(!token) return {redirect: { permanent: false, destination: "/auth" }};
     if(!Object.keys(store.getState().user).length) await store.dispatch(setUser(await GetProfile()));
@@ -15,12 +15,10 @@ export const HallServerSideProps: GetServerSideProps =  wrapper.getServerSidePro
     const user = store.getState().user;
     if(!Object.keys(user).length) return {redirect: { permanent: false, destination: "/auth" }};
 
-    const rooms = await AllRooms();
-
     return {
-      props: { rooms, user }
-    }
-  } catch (e: any) {
+      props: { user },
+    };
+  }catch (e: any){
     throw e.name
   }
 });
