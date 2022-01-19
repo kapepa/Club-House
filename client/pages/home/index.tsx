@@ -23,6 +23,6 @@ const Home: NextPage<IHome> = ({user}) => {
   )
 }
 
-export const getServerSideProps = HomeServerSideProps
+export const getServerSideProps = HomeServerSideProps;
 
 export default Home
