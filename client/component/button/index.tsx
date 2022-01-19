@@ -12,7 +12,7 @@ interface IButton {
   name: string,
   alias?: string
   disabled?: boolean,
-  callback(e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement>): void,
+  callback(e: React.MouseEvent<HTMLButtonElement | HTMLImageElement> | React.ChangeEvent<HTMLInputElement>): void,
 }
 
 const Button: FC<IButton> = ({name, callback, disabled = false, color,alias}) => {
