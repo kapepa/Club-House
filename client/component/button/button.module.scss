@@ -30,6 +30,15 @@
       border: 2px solid darkgreen;
     }
   }
+  &__red{
+    border: 2px solid palevioletred;
+    background-color: palevioletred;
+    &:hover{
+      color: #fff;
+      background-color: darkred;
+      border: 2px solid darkred;
+    }
+  }
   &__disabled{
     background-color: gray;
   }

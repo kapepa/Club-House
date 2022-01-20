@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Param,
   Post,
   Req,
@@ -64,5 +65,16 @@ export class RoomController {
   ): Promise<string> {
     const room = await this.roomService.Create(req.user.userId, body);
     return room.id;
+  }
+
+  @Delete('/delete/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Delete room',
+  })
+  async Delete(@Req() req, @Param('id') id: string): Promise<boolean> {
+    const del = await this.roomService.Delete(req.user.userId, id);
+    return del;
   }
 }

@@ -90,7 +90,7 @@ const PopupRoom: FC<IPopupRoom> = ({callback}) => {
           >Closed</div>
         </div>
         <span className={`${style.popup_room__start}`}>Start a room open to everyone</span>
-        <Button name={`Let's go`} callback={clickCreate} color={'green'} disabled={!Regexp.title.test(state.title)}/>
+        <Button name={`Let's go`} callback={clickCreate} color={'green'} disabled={!Regexp.title.test(state.title || '')}/>
       </div>
     </div>
   )

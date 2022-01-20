@@ -19,7 +19,7 @@ export const RoomServerSideProps: GetServerSideProps = wrapper.getServerSideProp
     if(roomId && !Object.keys(store.getState().room).length) await store.dispatch(setRoom(await OneRoom(roomId)))
 
     const room = store.getState().room;
-    if(!Object.keys(room).length) return {redirect: { permanent: false, destination: "/auth" }};
+    if(!Object.keys(room).length) return {redirect: { permanent: false, destination: "/hall" }};
 
     return {
       props: { room, user }

@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './room.entyty';
 import { Repository } from 'typeorm';
 import { UserService } from '../users/user.service';
+import { UserDto } from '../dto/user.dto';
 
 @Injectable()
 export class RoomService {
@@ -39,6 +40,18 @@ export class RoomService {
     createRoom.speaker = [user];
     const roomSave = await this.roomRepository.save(createRoom);
     return roomSave;
+  }
+
+  async Delete(userId: string, roomId: string): Promise<boolean> {
+    const room = await this.One('id', roomId, 'speaker');
+    const rights = room.speaker.some(
+      (profile: UserDto) => profile.id === userId,
+    );
+    if (rights) {
+      await this.roomRepository.delete({ id: roomId });
+      return true;
+    }
+    return false;
   }
 
   async Update(): Promise<any> {}
