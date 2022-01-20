@@ -17,7 +17,7 @@ const Login: FC = () => {
   })
 
   const loginClick = (e: React.MouseEvent<HTMLElement>): void => {
-    if(!userContext) setState({...state, popup: state.popup ? false : true})
+    if(!Object.keys(userContext).length) setState({...state, popup: state.popup ? false : true})
     if(userContext?.id) router.push('/profile');
   }
 
@@ -25,7 +25,7 @@ const Login: FC = () => {
     <>
       <div onClick={loginClick} className={`flex align-center pointer`}>
         <span className={style.login__span}>{`${userContext?.id ? userContext.username : 'Login'}`}</span>
-        <Avatar url={userContext?.avatar}/>
+        <Avatar url={userContext && userContext?.avatar ? userContext.avatar : ''}/>
       </div>
       {state.popup && <PopupLogin callback={() => {setState({...state, popup: false})}}/>}
     </>

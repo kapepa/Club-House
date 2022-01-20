@@ -9,11 +9,11 @@ export const HallServerSideProps: GetServerSideProps =  wrapper.getServerSidePro
     const token = Cookies(context).token;
     const { AllRooms, GetProfile } = ServerSideRequest(token);
 
+    if(!token) return {redirect: { permanent: false, destination: "/auth" }};
     if(!Object.keys(store.getState().user).length) await store.dispatch(setUser(await GetProfile()));
 
     const user = store.getState().user;
-
-    if(!token || !Object.keys(user).length) return {redirect: { permanent: false, destination: "/auth" }};
+    if(!Object.keys(user).length) return {redirect: { permanent: false, destination: "/auth" }};
 
     const rooms = await AllRooms();
 

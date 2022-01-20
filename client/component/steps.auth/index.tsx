@@ -1,4 +1,4 @@
-import React, {FC, useContext, useState} from "react";
+import React, {FC, useContext, useEffect, useRef, useState} from "react";
 import { useRouter } from 'next/router'
 import style from "./steps.auth.module.scss";
 import {CodeConfirmed, RegUser} from "../../helpers/request";
@@ -39,6 +39,7 @@ const StepsAuth: FC = () => {
     phone: undefined,
     code: undefined,
   })
+  const firstLoad = useRef<boolean>(true);
 
   const WelcomeCallback = (e: React.MouseEvent<HTMLButtonElement>) => setState({...state, step: 1, welcome: true});
   const ImportCallback = (data: {next: boolean, profile: {id: string, username: string, avatar: string, phone: string}}) => {
@@ -114,6 +115,21 @@ const StepsAuth: FC = () => {
     const reg = await RegUser(form);
     return reg
   }
+
+  useEffect(() => {
+
+    if(!firstLoad.current){
+      const { password, code, ...other } = JSON.parse(JSON.stringify(state))
+      localStorage.setItem('registration',JSON.stringify(other))
+    }
+
+    if(firstLoad.current){
+      const storage = localStorage.getItem('registration');
+      if(typeof storage === 'string') setState({...state, ...JSON.parse(storage)});
+      firstLoad.current = false;
+    }
+
+  },[state])
 
   return (
     <div className={`flex flex-column align-center content-center flex-grow ${state.step === 4 ? '': 'flex-column'}`}>

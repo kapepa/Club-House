@@ -25,10 +25,12 @@ const Import: FC<IImport> = ({callback}) => {
   }
 
   useEffect(() => {
-    window.addEventListener('message', (e: MessageEvent) => {
-      const {id, username, avatar, phone} = e.data;
-      callback({next: true, profile: {id, username, avatar, phone}});
-    })
+    if( window !== undefined ){
+      window.addEventListener('message', (e: MessageEvent) => {
+        const {id, username, avatar, phone} = e.data;
+        if(id || username) callback({next: true, profile: {id, username, avatar, phone}});
+      })
+    }
   },[])
 
   return (

@@ -1,4 +1,14 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RoomService } from './room.service';
 import {
   ApiBearerAuth,
@@ -17,6 +27,7 @@ export class RoomController {
 
   @Post('/all')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: 'Receive all rooms' })
   @ApiResponse({
     status: 200,
@@ -54,5 +65,16 @@ export class RoomController {
   ): Promise<string> {
     const room = await this.roomService.Create(req.user.userId, body);
     return room.id;
+  }
+
+  @Delete('/delete/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Delete room',
+  })
+  async Delete(@Req() req, @Param('id') id: string): Promise<boolean> {
+    const del = await this.roomService.Delete(req.user.userId, id);
+    return del;
   }
 }

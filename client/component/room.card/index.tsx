@@ -4,10 +4,8 @@ import style from "./room.card.module.scss";
 import { IRoom } from "../../dto/room.dto";
 import Avatar from "../avatar";
 
-
 const RoomCard: FC<IRoom> = (props) => {
   const {id,title, message, people, speaker} = props
-
   const router = useRouter();
   return (
     <div
