@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useRouter } from 'next/router'
 import {InferGetServerSidePropsType, NextPage} from "next";
 import style from "./room.module.scss";
@@ -12,7 +12,7 @@ import {DeleteRoom} from "../../helpers/request";
 
 interface IRoomPage {
   rooms: IRoom,
-};
+}
 
 interface IState {
   owner: boolean
@@ -28,10 +28,10 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     })
   }
 
-  useRef(() => {
+  useEffect(() => {
     const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
     setState({...state, owner: ownCheck})
-  }, []);
+  },[]);
 
   return (
     <BaseWrapper title={room.title} description={`weclcome to room page ${room.title}`} userContext={user}>
@@ -39,7 +39,7 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
         <div className={`${style.room__title} flex justify-space-between`}>
           <h4 className={style.room__h4}>{room.title}</h4>
           <div>
-            <Button classes={style.room__delete} name={'Delete room'} callback={RemoveRoom} color={'red'}/>
+            {state.owner && <Button classes={style.room__delete} name={'Delete room'} callback={RemoveRoom} color={'red'}/>}
           </div>
         </div>
         <ListSpeakers {...room}/>
