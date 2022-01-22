@@ -59,6 +59,7 @@
     "rxjs": "^7.2.0",
     "sharp": "^0.29.3",
     "sms_ru": "0.0.1",
+    "socket.io-redis": "^6.1.1",
     "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.2.41"
   },
