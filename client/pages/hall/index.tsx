@@ -9,7 +9,6 @@ import { HallServerSideProps } from './server.props';
 import {IUser} from "../../dto/user.dto";
 import SocketIO from "../../helpers/socket";
 
-
 interface IHall {
   rooms: IRoom,
   user: IUser,
