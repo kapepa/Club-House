@@ -5,15 +5,14 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { Socket } from 'socket.io';
+import { WsJwtGuard } from '../auth/guard/socket-auth.guard';
 
 @ApiBearerAuth()
+@UseGuards(WsJwtGuard)
 @ApiTags('socket')
 @WebSocketGateway({
   cors: {
@@ -25,13 +24,12 @@ export class WebsocketGateway {
   server: Server;
 
   @SubscribeMessage('hall')
-  // @UseGuards(AuthGuard('jwt'))
   @ApiResponse({
     status: 200,
     description: 'Append new user in hall',
   })
-  async Hall(@MessageBody() data: any): Promise<any> {
-    console.log(data);
+  async Hall(client: Socket, payload: any): Promise<any> {
+    console.log(client, payload);
     return 4;
   }
 
