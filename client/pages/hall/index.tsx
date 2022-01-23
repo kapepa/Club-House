@@ -20,7 +20,7 @@ const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof
 
     if(window !== undefined){
 
-      SocketIO.emit('events', (data: any) => {
+      SocketIO.emit('hall', (data: any) => {
         console.log(data)
       })
     }
