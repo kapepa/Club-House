@@ -9,6 +9,7 @@ import {IRoom} from "../../dto/room.dto";
 import Button from "../../component/button";
 import {IUser} from "../../dto/user.dto";
 import {DeleteRoom} from "../../helpers/request";
+import SocketIO from "../../helpers/socket";
 
 interface IRoomPage {
   rooms: IRoom,
@@ -16,11 +17,13 @@ interface IRoomPage {
 
 interface IState {
   owner: boolean
+  room: IRoom
 }
 
 const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
   const route = useRouter();
-  const [state, setState] = useState({} as IState)
+  const [state, setState] = useState({room, owner: ownCheck} as IState);
 
   const RemoveRoom = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     if(state.owner) await DeleteRoom(room.id).then( (res: boolean) => {
@@ -28,9 +31,20 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     })
   }
 
+  const AppendUser = (speaker: any) => {
+    setState({...state, room: {...state.room, speaker: speaker}})
+  }
+
   useEffect(() => {
-    const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
-    setState({...state, owner: ownCheck})
+
+    if(window !== undefined){
+      SocketIO.emit('joinRoom',{room: room.id}, AppendUser);
+      SocketIO.on('listenUser', AppendUser);
+
+      return () => {
+         SocketIO.emit('leaveRoom',{room: room.id})
+      }
+    }
   },[]);
 
   return (
@@ -42,7 +56,7 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
             {state.owner && <Button classes={style.room__delete} name={'Delete room'} callback={RemoveRoom} color={'red'}/>}
           </div>
         </div>
-        <ListSpeakers {...room}/>
+        <ListSpeakers {...state.room}/>
       </div>
     </BaseWrapper>
   )

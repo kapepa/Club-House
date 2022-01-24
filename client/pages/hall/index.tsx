@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import style from "../../component/hall.module.scss";
 import { InferGetServerSidePropsType, NextPage} from "next";
 import BaseWrapper, {UserContext} from "../../layout/base.wrapper";
@@ -14,25 +14,36 @@ interface IHall {
   user: IUser,
 }
 
+interface IState {
+  rooms: IRoom[]
+}
+
 const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const [state, setState] = useState<IState>({rooms})
+
+  const PeopleCountRooms = (community: any) => {
+    const copyRoom = JSON.parse(JSON.stringify(state.rooms));
+    const updatePeople = copyRoom.map((room: IRoom) => {
+      return community.hasOwnProperty(room.id) ? {...room, ...community[room.id]} : {...room}
+    })
+    setState({...state, rooms: updatePeople});
+  }
 
   useEffect(() => {
-
     if(window !== undefined){
-
-      SocketIO.emit('hall', (data: any) => {
-        console.log(data)
-      })
+      SocketIO.emit('hall', PeopleCountRooms);
+      SocketIO.on('peopleCountRooms', PeopleCountRooms)
+      return () => {
+        SocketIO.emit('leaveHall');
+      }
     }
-
   },[])
-
 
   return (
     <BaseWrapper title={"Hall"} description={"weclcome to hall page"} isHall={true} userContext = {user}>
       <HallPanell title={"Hall"}/>
       <div className={`${style.hall__content}`}>
-        {rooms.map((room: IRoom, i: number) => <RoomCard key={room.id + i} {...room} />)}
+        {state.rooms.map((room: IRoom, i: number) => <RoomCard key={room.id + i} {...room} />)}
       </div>
     </BaseWrapper>
   )
