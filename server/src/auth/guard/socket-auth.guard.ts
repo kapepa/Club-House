@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { AuthService } from '../auth.service';
 import { config } from 'dotenv';
 import { WsException } from '@nestjs/websockets';
 

@@ -11,7 +11,7 @@ const ListSpeakers: FC<IRoom> = ({speaker}) => {
           return (
             <div key={user.username + i} className={`flex flex-column justify-center ${style.list_speakers__frame}`}>
               <div className={`flex justify-center`}>
-                <Avatar />
+                <Avatar url = {user.avatar}/>
               </div>
               <div className={style.list_speakers__name}>
                 <span>{user.username}</span>
