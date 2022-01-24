@@ -10,6 +10,7 @@ import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { WebsocketsModule } from './websockets/websockets.module';
 
 config();
 
@@ -45,8 +46,8 @@ config();
     UserModule,
     AuthModule,
     FileModule,
+    WebsocketsModule,
   ],
   controllers: [],
-  providers: [],
 })
 export class AppModule {}

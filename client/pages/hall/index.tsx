@@ -7,6 +7,7 @@ import RoomCard from "../../component/room.card";
 import { IRoom } from "../../dto/room.dto";
 import { HallServerSideProps } from './server.props';
 import {IUser} from "../../dto/user.dto";
+import SocketIO from "../../helpers/socket";
 
 interface IHall {
   rooms: IRoom,
@@ -14,6 +15,19 @@ interface IHall {
 }
 
 const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+  useEffect(() => {
+
+    if(window !== undefined){
+
+      SocketIO.emit('hall', (data: any) => {
+        console.log(data)
+      })
+    }
+
+  },[])
+
+
   return (
     <BaseWrapper title={"Hall"} description={"weclcome to hall page"} isHall={true} userContext = {user}>
       <HallPanell title={"Hall"}/>
