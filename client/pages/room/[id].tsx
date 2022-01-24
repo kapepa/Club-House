@@ -27,7 +27,10 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
 
   const RemoveRoom = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     if(state.owner) await DeleteRoom(room.id).then( (res: boolean) => {
-      if(res) route.push('/hall');
+      if(res){
+        route.push('/hall');
+        SocketIO.emit('deleteRoom', {room: room.id})
+      }
     })
   }
 
@@ -40,9 +43,10 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     if(window !== undefined){
       SocketIO.emit('joinRoom',{room: room.id}, AppendUser);
       SocketIO.on('listenUser', AppendUser);
-
+      SocketIO.on('deleteRoom', () => route.push('/hall'));
       return () => {
-         SocketIO.emit('leaveRoom',{room: room.id})
+        SocketIO.emit('leaveRoom',{room: room.id});
+        SocketIO.removeAllListeners();
       }
     }
   },[]);

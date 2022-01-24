@@ -76,6 +76,20 @@ export class WebsocketGateway {
     this.ChangeCountRooms(io);
   }
 
+  @SubscribeMessage('deleteRoom')
+  @ApiResponse({
+    status: 200,
+    description: 'Delete room',
+  })
+  async DeleteRoom(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { room } = body;
+    this.roomMap.delete(room);
+    io.leave(room);
+    io.broadcast.to(room).emit('deleteRoom');
+    if (io.adapter.rooms.has(room)) io.adapter.rooms.delete(room);
+    this.ChangeCountRooms(io);
+  }
+
   @ApiResponse({
     status: 200,
     description: 'Remove user which disconnect',

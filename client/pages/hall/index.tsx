@@ -35,6 +35,7 @@ const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof
       SocketIO.on('peopleCountRooms', PeopleCountRooms)
       return () => {
         SocketIO.emit('leaveHall');
+        SocketIO.removeAllListeners();
       }
     }
   },[])
