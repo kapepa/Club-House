@@ -28,8 +28,8 @@ export class WebsocketGateway {
     status: 200,
     description: 'Append new user in hall',
   })
-  async Hall(client: Socket, payload: any): Promise<any> {
-    console.log(client, payload);
+  async Hall(client: { Socket; user: any }, payload: any): Promise<any> {
+    // console.log(client.user);
     return 4;
   }
 
