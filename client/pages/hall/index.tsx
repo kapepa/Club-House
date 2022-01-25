@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
+import { useRouter } from 'next/router'
 import style from "../../component/hall.module.scss";
 import { InferGetServerSidePropsType, NextPage} from "next";
 import BaseWrapper, {UserContext} from "../../layout/base.wrapper";
@@ -8,6 +9,7 @@ import { IRoom } from "../../dto/room.dto";
 import { HallServerSideProps } from './server.props';
 import {IUser} from "../../dto/user.dto";
 import SocketIO from "../../helpers/socket";
+import {GetAllRooms} from "../../helpers/request";
 
 interface IHall {
   rooms: IRoom,
@@ -19,10 +21,11 @@ interface IState {
 }
 
 const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [state, setState] = useState<IState>({rooms})
+  const [state, setState] = useState<IState>({rooms});
 
-  const PeopleCountRooms = (community: any) => {
-    const copyRoom = JSON.parse(JSON.stringify(state.rooms));
+  const PeopleCountRooms = async (data: {community: any, updateRooms: boolean}) => {
+    const { community, updateRooms } = data;
+    const copyRoom =  updateRooms ? await GetAllRooms() : JSON.parse(JSON.stringify(state.rooms));
     const updatePeople = copyRoom.map((room: IRoom) => {
       return community.hasOwnProperty(room.id) ? {...room, ...community[room.id]} : {...room}
     })
@@ -32,7 +35,7 @@ const Hall: NextPage<IHall> = ({rooms, user}: InferGetServerSidePropsType<typeof
   useEffect(() => {
     if(window !== undefined){
       SocketIO.emit('hall', PeopleCountRooms);
-      SocketIO.on('peopleCountRooms', PeopleCountRooms)
+      SocketIO.on('peopleCountRooms', PeopleCountRooms);
       return () => {
         SocketIO.emit('leaveHall');
         SocketIO.removeAllListeners();

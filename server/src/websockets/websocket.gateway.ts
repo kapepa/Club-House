@@ -33,9 +33,12 @@ export class WebsocketGateway {
     status: 200,
     description: 'Append new user in hall',
   })
-  async Hall(@MessageBody() body: any, @Req() io): Promise<any> {
+  async Hall(
+    @MessageBody() body: any,
+    @Req() io,
+  ): Promise<{ community: any; updateRooms: boolean }> {
     io.join('hall');
-    return this.PeopleCountRooms();
+    return { community: this.PeopleCountRooms(), updateRooms: false };
   }
 
   @SubscribeMessage('leaveHall')
@@ -43,7 +46,7 @@ export class WebsocketGateway {
     status: 200,
     description: 'leave from hall',
   })
-  async LeaveHall(@Req() io): Promise<any> {
+  async LeaveHall(@Req() io): Promise<void> {
     io.leave('hall');
   }
 
@@ -54,13 +57,14 @@ export class WebsocketGateway {
   })
   async JoinRoom(@MessageBody() body: any, @Req() io): Promise<UserDto[]> {
     const { room } = body;
+    const existRoom = !this.roomMap.has(room);
 
-    if (!this.roomMap.has(room)) this.roomMap.set(room, new Map());
+    if (existRoom) this.roomMap.set(room, new Map());
     this.roomMap.set(room, this.roomMap.get(room).set(io.id, io.user));
     const users = Array.from(this.roomMap.get(room).values());
     io.broadcast.in(room).emit('listenUser', users);
     io.join(room);
-    this.ChangeCountRooms(io);
+    this.ChangeCountRooms(io, existRoom);
 
     return users;
   }
@@ -85,9 +89,8 @@ export class WebsocketGateway {
     const { room } = body;
     this.roomMap.delete(room);
     io.leave(room);
-    io.broadcast.to(room).emit('deleteRoom');
     if (io.adapter.rooms.has(room)) io.adapter.rooms.delete(room);
-    this.ChangeCountRooms(io);
+    this.ChangeCountRooms(io, true);
   }
 
   @ApiResponse({
@@ -122,10 +125,14 @@ export class WebsocketGateway {
     }
   }
 
-  ChangeCountRooms(io: Socket) {
+  ChangeCountRooms(io: Socket, update = false) {
     const peopleRoom = this.PeopleCountRooms();
-    if (Object.keys(peopleRoom))
-      io.broadcast.in('hall').emit('peopleCountRooms', peopleRoom);
+    if (Object.keys(peopleRoom)) {
+      io.broadcast.in('hall').emit('peopleCountRooms', {
+        community: peopleRoom,
+        updateRooms: update,
+      });
+    }
   }
 
   PeopleCountRooms() {

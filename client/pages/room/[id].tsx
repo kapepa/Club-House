@@ -39,7 +39,6 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
   }
 
   useEffect(() => {
-
     if(window !== undefined){
       SocketIO.emit('joinRoom',{room: room.id}, AppendUser);
       SocketIO.on('listenUser', AppendUser);
