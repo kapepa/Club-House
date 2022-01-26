@@ -15,6 +15,10 @@ class IOSocket extends Socket {
   user: UserDto;
 }
 
+class IMapDto extends UserDto {
+  signal: any;
+}
+
 @ApiBearerAuth()
 @UseGuards(WsJwtGuard)
 @ApiTags('socket')
@@ -26,7 +30,7 @@ class IOSocket extends Socket {
 export class WebsocketGateway {
   @WebSocketServer()
   server: Server;
-  private roomMap = new Map<string, Map<string, UserDto>>();
+  private roomMap = new Map<string, Map<string, IMapDto>>();
 
   @SubscribeMessage('hall')
   @ApiResponse({
@@ -56,7 +60,7 @@ export class WebsocketGateway {
     description: 'Append new user to room',
   })
   async JoinRoom(@MessageBody() body: any, @Req() io): Promise<UserDto[]> {
-    const { room } = body;
+    const { room, signal } = body;
     const existRoom = !this.roomMap.has(room);
 
     if (existRoom) this.roomMap.set(room, new Map());
@@ -107,6 +111,28 @@ export class WebsocketGateway {
     }
     this.ChangeCountRooms(io);
     io.leave('hall');
+  }
+
+  @SubscribeMessage('offerPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Create new peer',
+  })
+  async OfferPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { signal, room } = body;
+
+    this.server.in(room).emit('makePeer', { signal, userId: io.id });
+  }
+
+  @SubscribeMessage('answerPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Answer peer',
+  })
+  async AnswerPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { signal, userId } = body;
+
+    this.server.in(userId).emit('completePeer', signal);
   }
 
   ClearRoom(room: string, io: IOSocket) {
