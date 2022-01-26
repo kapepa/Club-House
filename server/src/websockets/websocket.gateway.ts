@@ -120,8 +120,7 @@ export class WebsocketGateway {
   })
   async OfferPeer(@MessageBody() body: any, @Req() io): Promise<void> {
     const { signal, room } = body;
-
-    this.server.in(room).emit('makePeer', { signal, userId: io.id });
+    io.broadcast.to(room).emit('makePeer', { signal, userId: io.id });
   }
 
   @SubscribeMessage('answerPeer')

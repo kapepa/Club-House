@@ -25,7 +25,7 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
   const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
   const route = useRouter();
   const [state, setState] = useState({room, owner: ownCheck} as IState);
-  const [signal, setSignal] = useState<any>({});
+  const signalRef = useRef<any>({});
 
   const [audio, setAudio] = useState([])
 
@@ -41,49 +41,98 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
   }
 
   const PeerContainer = () => {
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    }).then(gotMedia).catch(() => {})
+    const peer1 = new Peer({ initiator: true })
+    const peer2 = new Peer()
 
-    function gotMedia (stream: any) {
-      const owner = new Peer({ initiator: true, stream: stream })
-      const other = new Peer()
-
-      owner.on('signal', signal => {
-        if(signal.type === 'offer'){
-          setSignal(signal)
-          SocketIO.emit('offerPeer', { signal: signal, room: room.id })
-        }
-      })
+    peer1.on('signal', data => {
+        signalRef.current = data
+        SocketIO.emit('offerPeer', { signal: data, room: room.id })
+    })
 
       SocketIO.on('makePeer', (data: {signal: any, userId: string}) => {
-        other.signal(data.signal);
-        owner.on('signal', signal => {
-          if(signal.type === 'answer') SocketIO.emit('answerPeer', {signal, userId: data.userId})
+        peer2.signal(data.signal);
+
+        console.log(data.signal)
+        peer2.on('signal', signal => {
+
+          // if(signal.type === 'answer'){
+          //
+          //   SocketIO.emit('answerPeer', {signal: signal, userId: data.userId})
+          // }
         })
       })
 
-      SocketIO.on('completePeer',(data) => {
-        other.signal(data)
-      })
 
-      other.on('stream', (stream: any) => {
-        const video = document.createElement('video');
+    peer2.on('stream', (stream: any) => {
+      // got remote video stream, now let's show it in a video tag
+      var video = document.createElement('video')
 
-        console.log(stream)
+      if ('srcObject' in video) {
+        video.srcObject = stream
+      } else {
+        video.src = window.URL.createObjectURL(stream) // for older browsers
+      }
 
-        if ('srcObject' in video) {
-          video.srcObject = stream
-        } else {
-          video.src = window.URL.createObjectURL(stream) // for older browsers
-        }
+      video.play();
 
-        video.play()
+      audioRef.current?.appendChild(video)
+    })
 
-        audioRef.current?.appendChild(video)
-      })
+    function addMedia (stream: any) {
+      peer1.addStream(stream) // <- add streams to peer dynamically
     }
+
+
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    }).then(addMedia).catch(() => {})
+
+    // navigator.mediaDevices.getUserMedia({
+    //   video: true,
+    //   audio: true
+    // }).then(gotMedia).catch(() => {})
+    //
+    // function gotMedia (stream: any) {
+    //   const owner = new Peer({ initiator: true, stream: stream })
+    //   const other = new Peer()
+    //
+    //   owner.on('signal', data => {
+    //     if (!Object.keys(signal).length && data.type === 'offer'){
+    //       setSignal(data)
+    //       SocketIO.emit('offerPeer', { signal: data, room: room.id })
+    //     }
+    //   })
+    //
+    //   SocketIO.on('makePeer', (data: {signal: any, userId: string}) => {
+    //     other.signal(data.signal);
+    //     owner.on('signal', signals => {
+    //       // if(signal.type === 'answer'){
+    //
+    //         SocketIO.emit('answerPeer', {signal: signals, userId: data.userId})
+    //       // }
+    //     })
+    //   })
+    //
+    //   SocketIO.on('completePeer',(data) => {
+    //     other.signal(data)
+    //   })
+    //
+    //   other.on('stream', (stream: any) => {
+    //     const video = document.createElement('video');
+    //
+    //
+    //     if ('srcObject' in video) {
+    //       video.srcObject = stream
+    //     } else {
+    //       video.src = window.URL.createObjectURL(stream) // for older browsers
+    //     }
+    //
+    //     video.play()
+    //
+    //     audioRef.current?.appendChild(video)
+    //   })
+    // }
   }
 
   const AppendUser = (speaker: any) => {
