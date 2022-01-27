@@ -112,6 +112,16 @@ export class WebsocketGateway {
     this.ChangeCountRooms(io);
     io.leave('hall');
   }
+  // Peer-Start
+  @SubscribeMessage('appendPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Create new peer',
+  })
+  async AppendPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { room } = body;
+    io.broadcast.to(room).emit('makePeer', { userId: io.id });
+  }
 
   @SubscribeMessage('offerPeer')
   @ApiResponse({
@@ -119,8 +129,8 @@ export class WebsocketGateway {
     description: 'Create new peer',
   })
   async OfferPeer(@MessageBody() body: any, @Req() io): Promise<void> {
-    const { signal, room } = body;
-    io.broadcast.to(room).emit('makePeer', { signal, userId: io.id });
+    const { signal } = body;
+    io.broadcast.emit('toPeer', { signal, userId: io.id });
   }
 
   @SubscribeMessage('answerPeer')
@@ -130,10 +140,9 @@ export class WebsocketGateway {
   })
   async AnswerPeer(@MessageBody() body: any, @Req() io): Promise<void> {
     const { signal, userId } = body;
-
-    this.server.in(userId).emit('completePeer', signal);
+    io.to(userId).emit('completePeer', signal);
   }
-
+  // Peer-End
   ClearRoom(room: string, io: IOSocket) {
     if (!this.roomMap.has(room)) return;
 
