@@ -42,93 +42,66 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
 
   const [audio, setAudio] = useState([])
 
-  const audioRef = useRef<HTMLDivElement | null>(null)
+  const [stream, setStream] = useState<any>()
+
+  const audioRef = useRef<any>(null)
+
+
+  const addPeer = (offer: { signal: any, userId: string}) => {
+    const peer = new Peer({
+      initiator: false,
+    });
+
+    peer.signal(offer.signal);
+
+    peer.on('signal', data => {
+      if(data.type === 'answer') SocketIO.emit('answerPeer',{ signal: data, userId: offer.userId });
+    });
+
+    peer.on('stream', (stream: any) => {
+      console.log(stream)
+    })
+
+  }
+
 
   useEffect(() => {
+
+    if(window === undefined) return;
+
+    const ownPeer = new Peer({
+      initiator: true,
+    });
+
+    ownPeer.on('signal', data => {
+      if(data.type === 'offer') {
+        signalRef.current = data;
+        SocketIO.emit('appendPeer');
+      }
+    })
+
+    ownPeer.on('stream', (stream: any) => {
+      console.log(stream)
+    })
+
+    SocketIO.on('makePeer',(data: { userId: string }) => {
+      SocketIO.emit('offerPeer',{signal: signalRef.current, userId: data.userId})
+    });
+
+    SocketIO.on('toPeer',(offer: { signal: any, userId: string}) => addPeer(offer));
+    SocketIO.on('completePeer', (signal: any) => {
+      ownPeer.signal(signal)
+    });
+
 
     navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true
-    }).then(gotMedia).catch(() => {})
+    }).then((stream) => {
+      console.log(stream)
+      ownPeer.addStream(stream)
+    }).catch(() => {})
 
-    function gotMedia (stream: any) {
-      const peer1 = new Peer({ initiator: true, stream: stream, trickle: false })
-      const peer2 = new Peer()
-
-      peer1.on('signal', data => {
-        if(data.type === 'offer') SocketIO.emit('offerPeer',{ signal: data });
-      })
-
-      SocketIO.on('toPeer', (offer: { signal: any, userId: string}) => {
-        console.log(offer)
-        peer2.signal(offer.signal);
-        peer2.on('signal', data => {
-          if(data.type === 'answer') SocketIO.emit('answerPeer',{ signal: data, userId: offer.userId });
-        })
-      });
-
-      SocketIO.on('completePeer', (signal: any) => {
-        peer1.signal(signal)
-      })
-
-      peer2.on('stream', (stream: any) => {
-        console.log(stream)
-        // got remote video stream, now let's show it in a video tag
-        const video = document.createElement('video')
-
-        if ('srcObject' in video) {
-          video.srcObject = stream
-        } else {
-          video.src = window.URL.createObjectURL(stream) // for older browsers
-        }
-
-        video.play()
-
-        audioRef.current?.appendChild(video)
-      })
-    }
-    // const peer1 = new Peer({initiator: true})
-    // const peer2 = new Peer({initiator: true})
-    //
-    // peer1.on('signal', data => {
-    //   if(data.type === 'offer') SocketIO.emit('offerPeer',{ signal: data });
-    // })
-    //
-    // SocketIO.on('toPeer', (offer: { signal: any, userId: string}) => {
-    //   peer2.signal(offer.signal);
-    //   peer2.on('signal', data => {
-    //     if(data.type === 'answer') SocketIO.emit('answerPeer',{ signal: data, userId: offer.userId });
-    //   })
-    // });
-    //
-    // SocketIO.on('completePeer', (signal: any) => {
-    //   peer1.signal(signal)
-    // })
-    //
-    // peer2.on('stream', (stream: any) => {
-    //   console.log(stream)
-    //   // got remote video stream, now let's show it in a video tag
-    //   const video = document.createElement('video')
-    //
-    //   if ('srcObject' in video) {
-    //     video.srcObject = stream
-    //   } else {
-    //     video.src = window.URL.createObjectURL(stream) // for older browsers
-    //   }
-    //
-    //   video.play()
-    //
-    //   audioRef.current?.appendChild(video)
-    // })
-    //
-    // function addMedia (stream: any) {
-    //   peer1.addStream(stream) // <- add streams to peer dynamically
-    // }
-    //
-    // navigator.mediaDevices.getUserMedia({
-    //   video: true,
-    //   audio: true
-    // }).then(addMedia).catch(() => {})
   },[])
 
 
