@@ -35,76 +35,6 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     })
   }
 
-
-  const [signals, setSignals] = useState<any>([]);
-
-  const signalRef = useRef<any>({});
-
-  const [audio, setAudio] = useState([])
-
-  const [stream, setStream] = useState<any>()
-
-  const audioRef = useRef<any>(null)
-
-
-  const addPeer = (offer: { signal: any, userId: string}) => {
-    const peer = new Peer({
-      initiator: false,
-    });
-
-    peer.signal(offer.signal);
-
-    peer.on('signal', data => {
-      if(data.type === 'answer') SocketIO.emit('answerPeer',{ signal: data, userId: offer.userId });
-    });
-
-    peer.on('stream', (stream: any) => {
-      console.log(stream)
-    })
-
-  }
-
-
-  useEffect(() => {
-
-    if(window === undefined) return;
-
-    const ownPeer = new Peer({
-      initiator: true,
-    });
-
-    ownPeer.on('signal', data => {
-      if(data.type === 'offer') {
-        signalRef.current = data;
-        SocketIO.emit('appendPeer');
-      }
-    })
-
-    ownPeer.on('stream', (stream: any) => {
-      console.log(stream)
-    })
-
-    SocketIO.on('makePeer',(data: { userId: string }) => {
-      SocketIO.emit('offerPeer',{signal: signalRef.current, userId: data.userId})
-    });
-
-    SocketIO.on('toPeer',(offer: { signal: any, userId: string}) => addPeer(offer));
-    SocketIO.on('completePeer', (signal: any) => {
-      ownPeer.signal(signal)
-    });
-
-
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    }).then((stream) => {
-      console.log(stream)
-      ownPeer.addStream(stream)
-    }).catch(() => {})
-
-  },[])
-
-
   const AppendUser = (speaker: any) => {
     setState({...state, room: {...state.room, speaker: speaker}})
   }
@@ -123,6 +53,87 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
 
 
 
+  const inputOfferRef = useRef<any>(null)
+  const inputAnswerRef = useRef<any>(null)
+
+  const ownPeerRef = useRef<any>(null)
+  const anyPeerRef = useRef<any>(null)
+
+  const audioRef = useRef<any>(null)
+
+
+
+  const offerSignal = () => {
+    const input = inputOfferRef.current;
+    const obj = JSON.parse(input.value)
+    anyPeerRef.current.signal(obj)
+  }
+
+  const  anwerSignal = () => {
+    const input = inputAnswerRef.current;
+    const obj = JSON.parse(input.value)
+    ownPeerRef.current.signal(obj)
+  }
+
+  useEffect(() => {
+
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    }).then((stream: any) => {
+      console.log(stream)
+    }).catch((err) => {console.log(err)})
+
+    if (!Peer.WEBRTC_SUPPORT || window === undefined ) return
+
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    }).then(addMedia).catch((err) => {console.log(err)})
+
+    function addMedia (stream: any) {
+      stream.getTracks().forEach((track: any) => track.stop());
+
+      ownPeerRef.current = new Peer({
+        initiator: true,
+        trickle: false,
+        stream: stream,
+      })
+      anyPeerRef.current = new Peer({
+        initiator: false,
+        trickle: false,
+      })
+
+      ownPeerRef.current.on('signal', (data: any) => {
+        console.log(JSON.stringify(data));
+      })
+
+      anyPeerRef.current.on('signal', (data: any) => {
+        console.log(JSON.stringify(data));
+      })
+
+
+      anyPeerRef.current.on('connect', () => {
+        console.log('connect')
+      })
+
+      ownPeerRef.current.on('connect', () => {
+        console.log('connect')
+      })
+
+
+      // anyPeerRef.current.on('stream', (stream: any) => {
+      //   console.log(stream)
+      // })
+
+      // ownPeerRef.current.on('stream', (stream: any) => {
+      //   console.log(stream)
+      // })
+    }
+
+  },[])
+
+
   return (
     <BaseWrapper title={room.title} description={`weclcome to room page ${room.title}`} userContext={user}>
       <div className={`flex flex-column ${style.room}`}>
@@ -138,7 +149,11 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
           {/*  return <video key = {`video-${i}`} src = { window.URL.createObjectURL(streem)} autoPlay={true} />*/}
           {/*})}*/}
           <div ref={audioRef}>
+            <input ref={inputOfferRef} type={'text'} name={'offer'}/>
+            <button onClick={offerSignal}>Set Offer</button>
 
+            <input ref={inputAnswerRef} type={'text'} name={'answerl'}/>
+            <button onClick={anwerSignal}>Set Anser</button>
           </div>
         </div>
       </div>
