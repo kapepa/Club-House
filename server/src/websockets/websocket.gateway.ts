@@ -119,7 +119,8 @@ export class WebsocketGateway {
     description: 'Create new peer',
   })
   async AppendPeer(@MessageBody() body: any, @Req() io): Promise<void> {
-    io.broadcast.emit('makePeer', { userId: io.id });
+    const { roomId } = body;
+    io.broadcast.in(roomId).emit('makePeer', { userId: io.id });
   }
 
   @SubscribeMessage('offerPeer')
@@ -129,7 +130,7 @@ export class WebsocketGateway {
   })
   async OfferPeer(@MessageBody() body: any, @Req() io): Promise<void> {
     const { signal, userId } = body;
-    io.broadcast.emit('toPeer', { signal, userId: io.id });
+    io.broadcast.to(userId).emit('toPeer', { signal, userId: io.id });
   }
 
   @SubscribeMessage('answerPeer')
@@ -139,7 +140,7 @@ export class WebsocketGateway {
   })
   async AnswerPeer(@MessageBody() body: any, @Req() io): Promise<void> {
     const { signal, userId } = body;
-    io.broadcast.emit('completePeer', signal);
+    io.broadcast.to(userId).emit('completePeer', { signal, userId: io.id });
   }
   // Peer-End
   ClearRoom(room: string, io: IOSocket) {

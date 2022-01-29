@@ -9,8 +9,10 @@ import {IRoom} from "../../dto/room.dto";
 import Button from "../../component/button";
 import {IUser} from "../../dto/user.dto";
 import {DeleteRoom} from "../../helpers/request";
-import Peer, {} from "simple-peer";
+import Peer, { SignalData } from "simple-peer";
 import SocketIO from "../../helpers/socket";
+import {Stream} from "stream";
+import Video from "../../component/video";
 
 interface IRoomPage {
   rooms: IRoom,
@@ -44,6 +46,16 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
       SocketIO.emit('joinRoom',{room: room.id}, AppendUser);
       SocketIO.on('listenUser', AppendUser);
       SocketIO.on('deleteRoom', () => route.push('/hall'));
+      if(Peer.WEBRTC_SUPPORT){
+        navigator.mediaDevices.getUserMedia({
+          // video: true,
+          audio: true
+        }).then((stream: MediaStream) => {
+          setStream(stream);
+          SocketIO.emit('appendPeer', {roomId: room.id});
+
+        }).catch((err) => {console.log(err)})
+      }
       return () => {
         SocketIO.emit('leaveRoom',{room: room.id});
         SocketIO.removeAllListeners();
@@ -51,85 +63,74 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     }
   },[]);
 
-
-
-  const inputOfferRef = useRef<any>(null)
-  const inputAnswerRef = useRef<any>(null)
-
   const ownPeerRef = useRef<any>(null)
   const anyPeerRef = useRef<any>(null)
 
-  const audioRef = useRef<any>(null)
+  const signaPeerMap = useRef<Map<string, any>>(new Map());
+  const [stream, setStream] = useState<MediaStream>()
 
+  const myPeer = () => {
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    })
 
+    peer.on('connect', () => {
+      console.log('connect')
+    })
 
-  const offerSignal = () => {
-    const input = inputOfferRef.current;
-    const obj = JSON.parse(input.value)
-    anyPeerRef.current.signal(obj)
+    // peer.on('stream', (stream: Stream) => {
+    //   console.log(stream)
+    // })
+
+    return peer;
   }
 
-  const  anwerSignal = () => {
-    const input = inputAnswerRef.current;
-    const obj = JSON.parse(input.value)
-    ownPeerRef.current.signal(obj)
+  const appendPeer = () => {
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+    });
+
+    peer.on('connect', () => {
+      console.log('connect')
+    })
+
+    // peer.on('stream', (stream: Stream) => {
+    //   console.log(stream)
+    // })
+
+    return peer;
   }
+
+  const makePeer = (prop: {userId: string}) => {
+    const peer = myPeer();
+    peer.on('signal', (data: SignalData) => {
+      SocketIO.emit('offerPeer', {signal: data, userId: prop.userId})
+    })
+    signaPeerMap.current.set( prop.userId, peer )
+  }
+
+  const toPeer = (prop: { signal: SignalData, userId: string }) => {
+    const peer = appendPeer();
+    peer.signal(prop.signal)
+    peer.on('signal', (data: SignalData) => {
+      SocketIO.emit('answerPeer', {signal: data, userId: prop.userId})
+    })
+    signaPeerMap.current.set(prop.userId, peer)
+  }
+  
+  const completePeer = (prop: { signal: SignalData, userId: string }) => {
+    signaPeerMap.current.get(prop.userId).signal(prop.signal)
+  }
+
 
   useEffect(() => {
 
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    }).then((stream: any) => {
-      console.log(stream)
-    }).catch((err) => {console.log(err)})
-
-    if (!Peer.WEBRTC_SUPPORT || window === undefined ) return
-
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    }).then(addMedia).catch((err) => {console.log(err)})
-
-    function addMedia (stream: any) {
-      stream.getTracks().forEach((track: any) => track.stop());
-
-      ownPeerRef.current = new Peer({
-        initiator: true,
-        trickle: false,
-        stream: stream,
-      })
-      anyPeerRef.current = new Peer({
-        initiator: false,
-        trickle: false,
-      })
-
-      ownPeerRef.current.on('signal', (data: any) => {
-        console.log(JSON.stringify(data));
-      })
-
-      anyPeerRef.current.on('signal', (data: any) => {
-        console.log(JSON.stringify(data));
-      })
-
-
-      anyPeerRef.current.on('connect', () => {
-        console.log('connect')
-      })
-
-      ownPeerRef.current.on('connect', () => {
-        console.log('connect')
-      })
-
-
-      // anyPeerRef.current.on('stream', (stream: any) => {
-      //   console.log(stream)
-      // })
-
-      // ownPeerRef.current.on('stream', (stream: any) => {
-      //   console.log(stream)
-      // })
-    }
+    SocketIO.on('makePeer', makePeer);
+    SocketIO.on('toPeer', toPeer);
+    SocketIO.on('completePeer', completePeer);
 
   },[])
 
@@ -145,16 +146,9 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
         </div>
         <ListSpeakers {...state.room}/>
         <div className={style.room__speak_media}>
-          {/*{state.stream && state.stream.map((streem: any, i: number) => {*/}
-          {/*  return <video key = {`video-${i}`} src = { window.URL.createObjectURL(streem)} autoPlay={true} />*/}
-          {/*})}*/}
-          <div ref={audioRef}>
-            <input ref={inputOfferRef} type={'text'} name={'offer'}/>
-            <button onClick={offerSignal}>Set Offer</button>
-
-            <input ref={inputAnswerRef} type={'text'} name={'answerl'}/>
-            <button onClick={anwerSignal}>Set Anser</button>
-          </div>
+          { Array.from(signaPeerMap.current.values()).map((signal: SignalData, i: number) => {
+            return (<Video key={`signal=${i}`} />)
+          }) }
         </div>
       </div>
     </BaseWrapper>
