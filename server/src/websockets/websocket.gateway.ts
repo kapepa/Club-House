@@ -15,6 +15,10 @@ class IOSocket extends Socket {
   user: UserDto;
 }
 
+class IMapDto extends UserDto {
+  signal: any;
+}
+
 @ApiBearerAuth()
 @UseGuards(WsJwtGuard)
 @ApiTags('socket')
@@ -26,16 +30,19 @@ class IOSocket extends Socket {
 export class WebsocketGateway {
   @WebSocketServer()
   server: Server;
-  private roomMap = new Map<string, Map<string, UserDto>>();
+  private roomMap = new Map<string, Map<string, IMapDto>>();
 
   @SubscribeMessage('hall')
   @ApiResponse({
     status: 200,
     description: 'Append new user in hall',
   })
-  async Hall(@MessageBody() body: any, @Req() io): Promise<any> {
+  async Hall(
+    @MessageBody() body: any,
+    @Req() io,
+  ): Promise<{ community: any; updateRooms: boolean }> {
     io.join('hall');
-    return this.PeopleCountRooms();
+    return { community: this.PeopleCountRooms(), updateRooms: false };
   }
 
   @SubscribeMessage('leaveHall')
@@ -43,7 +50,7 @@ export class WebsocketGateway {
     status: 200,
     description: 'leave from hall',
   })
-  async LeaveHall(@Req() io): Promise<any> {
+  async LeaveHall(@Req() io): Promise<void> {
     io.leave('hall');
   }
 
@@ -53,14 +60,15 @@ export class WebsocketGateway {
     description: 'Append new user to room',
   })
   async JoinRoom(@MessageBody() body: any, @Req() io): Promise<UserDto[]> {
-    const { room } = body;
+    const { room, signal } = body;
+    const existRoom = !this.roomMap.has(room);
 
-    if (!this.roomMap.has(room)) this.roomMap.set(room, new Map());
+    if (existRoom) this.roomMap.set(room, new Map());
     this.roomMap.set(room, this.roomMap.get(room).set(io.id, io.user));
     const users = Array.from(this.roomMap.get(room).values());
     io.broadcast.in(room).emit('listenUser', users);
     io.join(room);
-    this.ChangeCountRooms(io);
+    this.ChangeCountRooms(io, existRoom);
 
     return users;
   }
@@ -74,6 +82,19 @@ export class WebsocketGateway {
     const { room } = body;
     this.ClearRoom(room, io);
     this.ChangeCountRooms(io);
+  }
+
+  @SubscribeMessage('deleteRoom')
+  @ApiResponse({
+    status: 200,
+    description: 'Delete room',
+  })
+  async DeleteRoom(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { room } = body;
+    this.roomMap.delete(room);
+    io.leave(room);
+    if (io.adapter.rooms.has(room)) io.adapter.rooms.delete(room);
+    this.ChangeCountRooms(io, true);
   }
 
   @ApiResponse({
@@ -91,7 +112,36 @@ export class WebsocketGateway {
     this.ChangeCountRooms(io);
     io.leave('hall');
   }
+  // Peer-Start
+  @SubscribeMessage('appendPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Create new peer',
+  })
+  async AppendPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    io.broadcast.emit('makePeer', { userId: io.id });
+  }
 
+  @SubscribeMessage('offerPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Create new peer',
+  })
+  async OfferPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { signal, userId } = body;
+    io.broadcast.emit('toPeer', { signal, userId: io.id });
+  }
+
+  @SubscribeMessage('answerPeer')
+  @ApiResponse({
+    status: 200,
+    description: 'Answer peer',
+  })
+  async AnswerPeer(@MessageBody() body: any, @Req() io): Promise<void> {
+    const { signal, userId } = body;
+    io.broadcast.emit('completePeer', signal);
+  }
+  // Peer-End
   ClearRoom(room: string, io: IOSocket) {
     if (!this.roomMap.has(room)) return;
 
@@ -108,10 +158,14 @@ export class WebsocketGateway {
     }
   }
 
-  ChangeCountRooms(io: Socket) {
+  ChangeCountRooms(io: Socket, update = false) {
     const peopleRoom = this.PeopleCountRooms();
-    if (Object.keys(peopleRoom))
-      io.broadcast.in('hall').emit('peopleCountRooms', peopleRoom);
+    if (Object.keys(peopleRoom)) {
+      io.broadcast.in('hall').emit('peopleCountRooms', {
+        community: peopleRoom,
+        updateRooms: update,
+      });
+    }
   }
 
   PeopleCountRooms() {

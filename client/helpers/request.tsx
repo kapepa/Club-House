@@ -66,5 +66,14 @@ export const DeleteRoom = async (id: string) => {
   }
 }
 
+export const GetAllRooms = async () => {
+  try{
+    const rooms = await Axios.post('/room/all').then(res => res.data);
+    return rooms;
+  }catch (err: any){
+    throw err.name;
+  }
+}
+
 
 
