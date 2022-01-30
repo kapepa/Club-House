@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { useRouter } from 'next/router'
 import {InferGetServerSidePropsType, NextPage} from "next";
 import style from "./room.module.scss";
@@ -9,10 +9,9 @@ import {IRoom} from "../../dto/room.dto";
 import Button from "../../component/button";
 import {IUser} from "../../dto/user.dto";
 import {DeleteRoom} from "../../helpers/request";
-import Peer, { SignalData } from "simple-peer";
+import Peer, { SimplePeer, SignalData } from "simple-peer";
 import SocketIO from "../../helpers/socket";
-import {Stream} from "stream";
-import Video from "../../component/video";
+import Media from "../../component/video";
 
 interface IRoomPage {
   rooms: IRoom,
@@ -24,9 +23,12 @@ interface IState {
 }
 
 const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
   const route = useRouter();
+  const ownCheck = room.speaker.some((profile: IUser) => profile.id === user.id);
   const [state, setState] = useState({room, owner: ownCheck} as IState);
+  const [media, setMedia] = useState<SimplePeer[]>([]);
+  const signaPeerMap = useRef<Map<string, any>>(new Map());
+  const streamRef = useRef<MediaStream | undefined>();
 
   const RemoveRoom = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     if(state.owner) await DeleteRoom(room.id).then( (res: boolean) => {
@@ -41,6 +43,50 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     setState({...state, room: {...state.room, speaker: speaker}})
   }
 
+  // WebRTC start
+
+  const createPeer = (initiator = false, id: string) => {
+    const peer = new Peer({
+      initiator: initiator,
+      trickle: false,
+      stream: streamRef.current,
+    });
+
+    peer.on('connect', () => {console.log('connect')});
+    peer.on('error', (err) => {console.error(err)})
+    peer.on('close', () => {
+      signaPeerMap.current.delete( id )
+      setMedia(Array.from(signaPeerMap.current.values()))
+    })
+
+    return peer;
+  }
+
+  const makePeer = (prop: { userId: string }) => {
+    const peer = createPeer(true, prop.userId);
+    peer.on('signal', (data: SignalData) => {
+      SocketIO.emit('offerPeer', {signal: data, userId: prop.userId})
+    })
+    signaPeerMap.current.set( prop.userId, peer )
+    setMedia(Array.from(signaPeerMap.current.values()))
+  }
+
+  const toPeer = (prop: { signal: SignalData, userId: string }) => {
+    const peer = createPeer(false, prop.userId);
+    peer.signal(prop.signal)
+    peer.on('signal', (data: SignalData) => {
+      SocketIO.emit('answerPeer', {signal: data, userId: prop.userId})
+    })
+    signaPeerMap.current.set(prop.userId, peer)
+    setMedia(Array.from(signaPeerMap.current.values()))
+  }
+
+  const completePeer = (prop: { signal: SignalData, userId: string }) => {
+    signaPeerMap.current.get(prop.userId).signal(prop.signal)
+  }
+
+  // WebRTC end
+
   useEffect(() => {
     if(window !== undefined){
       SocketIO.emit('joinRoom',{room: room.id}, AppendUser);
@@ -51,9 +97,11 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
           // video: true,
           audio: true
         }).then((stream: MediaStream) => {
-          setStream(stream);
+          streamRef.current = stream;
           SocketIO.emit('appendPeer', {roomId: room.id});
-
+          SocketIO.on('makePeer', makePeer);
+          SocketIO.on('toPeer', toPeer);
+          SocketIO.on('completePeer', completePeer);
         }).catch((err) => {console.log(err)})
       }
       return () => {
@@ -62,78 +110,6 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
       }
     }
   },[]);
-
-  const ownPeerRef = useRef<any>(null)
-  const anyPeerRef = useRef<any>(null)
-
-  const signaPeerMap = useRef<Map<string, any>>(new Map());
-  const [stream, setStream] = useState<MediaStream>()
-
-  const myPeer = () => {
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: stream,
-    })
-
-    peer.on('connect', () => {
-      console.log('connect')
-    })
-
-    // peer.on('stream', (stream: Stream) => {
-    //   console.log(stream)
-    // })
-
-    return peer;
-  }
-
-  const appendPeer = () => {
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-    });
-
-    peer.on('connect', () => {
-      console.log('connect')
-    })
-
-    // peer.on('stream', (stream: Stream) => {
-    //   console.log(stream)
-    // })
-
-    return peer;
-  }
-
-  const makePeer = (prop: {userId: string}) => {
-    const peer = myPeer();
-    peer.on('signal', (data: SignalData) => {
-      SocketIO.emit('offerPeer', {signal: data, userId: prop.userId})
-    })
-    signaPeerMap.current.set( prop.userId, peer )
-  }
-
-  const toPeer = (prop: { signal: SignalData, userId: string }) => {
-    const peer = appendPeer();
-    peer.signal(prop.signal)
-    peer.on('signal', (data: SignalData) => {
-      SocketIO.emit('answerPeer', {signal: data, userId: prop.userId})
-    })
-    signaPeerMap.current.set(prop.userId, peer)
-  }
-  
-  const completePeer = (prop: { signal: SignalData, userId: string }) => {
-    signaPeerMap.current.get(prop.userId).signal(prop.signal)
-  }
-
-
-  useEffect(() => {
-
-    SocketIO.on('makePeer', makePeer);
-    SocketIO.on('toPeer', toPeer);
-    SocketIO.on('completePeer', completePeer);
-
-  },[])
-
 
   return (
     <BaseWrapper title={room.title} description={`weclcome to room page ${room.title}`} userContext={user}>
@@ -146,8 +122,8 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
         </div>
         <ListSpeakers {...state.room}/>
         <div className={style.room__speak_media}>
-          { Array.from(signaPeerMap.current.values()).map((signal: SignalData, i: number) => {
-            return (<Video key={`signal=${i}`} />)
+          { media.map((peer: any, i: number) => {
+            return (<Media key={`peer=${i}`} peer={peer} />)
           }) }
         </div>
       </div>

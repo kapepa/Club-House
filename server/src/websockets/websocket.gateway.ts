@@ -112,7 +112,7 @@ export class WebsocketGateway {
     this.ChangeCountRooms(io);
     io.leave('hall');
   }
-  // Peer-Start
+
   @SubscribeMessage('appendPeer')
   @ApiResponse({
     status: 200,
@@ -142,7 +142,7 @@ export class WebsocketGateway {
     const { signal, userId } = body;
     io.broadcast.to(userId).emit('completePeer', { signal, userId: io.id });
   }
-  // Peer-End
+
   ClearRoom(room: string, io: IOSocket) {
     if (!this.roomMap.has(room)) return;
 
