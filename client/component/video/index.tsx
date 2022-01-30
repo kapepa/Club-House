@@ -17,8 +17,7 @@ const Media: FC<IMedia> = ({peer}) => {
       }
       video.play();
     })
-  },[])
-
+  },[]);
 
   return <audio ref={videoRef} controls={true} />
 }

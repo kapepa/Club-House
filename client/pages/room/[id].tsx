@@ -53,7 +53,7 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     });
 
     peer.on('connect', () => {console.log('connect')});
-    peer.on('error', (err) => {console.error(err)})
+    peer.on('error', (err) => { console.error(err) })
     peer.on('close', () => {
       signaPeerMap.current.delete( id )
       setMedia(Array.from(signaPeerMap.current.values()))
