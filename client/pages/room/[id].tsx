@@ -55,8 +55,8 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
     peer.on('connect', () => {console.log('connect')});
     peer.on('error', (err) => { console.error(err) })
     peer.on('close', () => {
-      signaPeerMap.current.delete( id )
-      setMedia(Array.from(signaPeerMap.current.values()))
+      signaPeerMap.current.delete( id );
+      setMedia(Array.from(signaPeerMap.current.values()));
     })
 
     return peer;
@@ -102,11 +102,12 @@ const Room: NextPage<IRoomPage> = ({room, user}: InferGetServerSidePropsType<typ
           SocketIO.on('makePeer', makePeer);
           SocketIO.on('toPeer', toPeer);
           SocketIO.on('completePeer', completePeer);
-        }).catch((err) => {console.log(err)})
+        }).catch((err) => {console.error(err)})
       }
       return () => {
         SocketIO.emit('leaveRoom',{room: room.id});
         SocketIO.removeAllListeners();
+        Array.from(signaPeerMap.current.values()).forEach(peer => peer.destroy());
       }
     }
   },[]);
