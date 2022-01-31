@@ -183,20 +183,21 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   @Get('/facebook/redirect')
   async FacebookRedirect(
-    @Req() req: Request,
+    @Req() req: { Request; user: any },
     @Res() res: Response,
   ): Promise<any> {
     try {
       const user = await this.authService.FacebookLogin({
         email: '',
         password: '',
-        username: '',
+        username: req.user.firstName,
         fullname: '',
         avatar: '',
         isActive: false,
         phone: '',
         code: '',
       });
+
       res.send(
         `<script>window.opener.postMessage(${JSON.stringify(
           user,
