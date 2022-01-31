@@ -36,7 +36,7 @@ const Import: FC<IImport> = ({callback}) => {
         if(id || username) callback({next: true, profile: {id, username, avatar, phone}});
       })
     }
-  },[])
+  },[]);
 
   return (
     <>
