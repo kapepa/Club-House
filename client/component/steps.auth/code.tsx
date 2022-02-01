@@ -24,7 +24,7 @@ const Code: FC<ICode> = ({callback}) => {
     two: null,
     three: null,
     four: null,
-  })
+  });
 
   const ConfirmedClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const joinCode = Number(Object.values(code).join(''));
