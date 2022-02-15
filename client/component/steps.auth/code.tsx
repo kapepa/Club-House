@@ -106,6 +106,6 @@ const Code: FC<ICode> = ({callback}) => {
       </div>
     </>
   )
-}
+};
 
 export default Code;
