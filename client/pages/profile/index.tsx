@@ -6,7 +6,7 @@ import style from "./profile.module.scss";
 import BaseWrapper from "../../layout/base.wrapper";
 import Avatar from "../../component/avatar";
 import Button from "../../component/button";
-import {ProfileServerSideProps} from "./server.props";
+import {ProfileServerSideProps} from "../../server.props/profile";
 import {IUser} from "../../dto/user.dto";
 import Input from "../../component/input";
 import Regexp from "../../helpers/regexp";
