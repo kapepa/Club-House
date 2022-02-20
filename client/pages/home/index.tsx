@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import BaseWrapper from "../../layout/base.wrapper";
-import {HomeServerSideProps} from "./server.props";
+import {HomeServerSideProps} from "../../server.props/home";
 import {IUser} from "../../dto/user.dto";
 import style from "./home.module.scss"
 

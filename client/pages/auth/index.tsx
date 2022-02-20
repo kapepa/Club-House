@@ -1,7 +1,7 @@
 import {NextPage} from "next";
 import BaseWrapper from "../../layout/base.wrapper";
 import StepsAuth from "../../component/steps.auth";
-import {AuthServerSideProps} from "./server.props";
+import {AuthServerSideProps} from "../../server.props/auth";
 import {IRoom} from "../../dto/room.dto";
 import {IUser} from "../../dto/user.dto";
 

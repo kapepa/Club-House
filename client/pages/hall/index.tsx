@@ -6,7 +6,7 @@ import BaseWrapper, {UserContext} from "../../layout/base.wrapper";
 import HallPanell from "../../component/hall.panell";
 import RoomCard from "../../component/room.card";
 import { IRoom } from "../../dto/room.dto";
-import { HallServerSideProps } from './server.props';
+import { HallServerSideProps } from '../../server.props/hall';
 import {IUser} from "../../dto/user.dto";
 import SocketIO from "../../helpers/socket";
 import {GetAllRooms} from "../../helpers/request";

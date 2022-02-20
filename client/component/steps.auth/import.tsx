@@ -24,6 +24,11 @@ const Import: FC<IImport> = ({callback}) => {
     window.open(`${config.url}/auth/google`, `AuthGoogle`, `left=100,top=100,width=520,height=520`);
   }
 
+  const FaceBookClick = (e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.open(`${config.url}/auth/facebook`, `AuthFaceBook`, `left=100,top=100,width=520,height=520`);
+  }
+
   useEffect(() => {
     if( window !== undefined ){
       window.addEventListener('message', (e: MessageEvent) => {
@@ -31,7 +36,7 @@ const Import: FC<IImport> = ({callback}) => {
         if(id || username) callback({next: true, profile: {id, username, avatar, phone}});
       })
     }
-  },[])
+  },[]);
 
   return (
     <>
@@ -47,6 +52,9 @@ const Import: FC<IImport> = ({callback}) => {
         </div>
         <div className={`flex content-center ${style.steps__cell}`}>
           <Button name="Import from Google" callback={GoogleClick}/>
+        </div>
+        <div className={`flex content-center ${style.steps__cell}`}>
+          <Button name="Import from Facebook" callback={FaceBookClick}/>
         </div>
       </div>
       <div className={`flex justify-center ${style.steps__basement}`}>

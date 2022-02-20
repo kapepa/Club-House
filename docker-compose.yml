@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  nextjs:
+    container_name: nextjs
+    restart: always
+    ports:
+      - 3000:3000
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./packages/landingpage:/client/usr/src/app
+      - /client/usr/src/app/node_modules
+      - /client/usr/src/app/.next
+    env_file:
+      - ./client/.env
+  nestjs:
+    container_name: nestjs
+    restart: always
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+        - .:/server/usr/src/app
+        - /server/usr/src/app/node_modules
+

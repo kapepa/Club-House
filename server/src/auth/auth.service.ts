@@ -214,7 +214,7 @@ export class AuthService {
       const existEmail = await this.ExistEmail(user);
       if (existEmail.error) return existEmail;
     }
-
-    return user;
+    const profile = await this.userService.Create(user);
+    return profile;
   }
 }

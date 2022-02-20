@@ -1,9 +1,9 @@
 import { GetServerSideProps } from 'next'
-import {wrapper} from '../../redux/store';
+import {wrapper} from '../redux/store';
 import Cookies from "next-cookies"
-import ServerSideRequest from '../../helpers/server.side';
-import {setUser} from "../../redux/user/userAction";
-import {setRoom} from "../../redux/room/roomAction";
+import ServerSideRequest from '../helpers/server.side';
+import {setUser} from "../redux/user/userAction";
+import {setRoom} from "../redux/room/roomAction";
 
 export const RoomServerSideProps: GetServerSideProps = wrapper.getServerSideProps(store => async (context) => {
   try{
