@@ -15,7 +15,7 @@ const ServerSideRequest = (token: string | undefined) => {
         const rooms = await Axios.post('/room/all').then((res) => res.data)
         return rooms;
       } catch (e: any) {
-        throw e.name
+        return [] as IRoom[]
       }
     },
     async GetProfile(): Promise<IUser> {
@@ -24,7 +24,7 @@ const ServerSideRequest = (token: string | undefined) => {
         return user;
       }
       catch (e: any) {
-        throw e.name
+        return {} as IUser
       }
     },
     async OneRoom (id: string | string[]): Promise<IRoom> {
@@ -32,7 +32,7 @@ const ServerSideRequest = (token: string | undefined) => {
         const room = await Axios.post(`/room/one/${id}`).then(res => res.data);
         return room;
       }catch (e:any){
-        throw e.name
+        return {} as IRoom
       }
     }
   }
