@@ -23,8 +23,7 @@ import { DtoRoom } from '../dto/room.dto';
 
 @ApiBearerAuth()
 @ApiTags('auth')
-@Controller('auth')
-@Controller('/auth')
+@Controller('/api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
