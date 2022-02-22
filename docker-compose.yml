@@ -3,41 +3,52 @@ services:
   nextjs:
     container_name: nextjs
     restart: always
-    ports:
-      - 3000:3000
     build:
       context: ./client
       dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: "http://nestjs:5000"
     volumes:
       - ./packages/landingpage:/client/usr/src/app
       - /client/usr/src/app/node_modules
       - /client/usr/src/app/.next
     env_file:
       - ./client/.env
+    depends_on:
+      - mysql
+      - nestjs
   nestjs:
     container_name: nestjs
+    hostname: nestjs
     restart: always
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
-    volumes:
-        - .:/server/usr/src/app
-        - /server/usr/src/app/node_modules
+      - "5000:5000"
     env_file:
       - ./server/.env
+    environment:
+      MYSQL_HOST: mysql
+    depends_on:
+      - mysql
   mysql:
     container_name: mysql
+    hostname: mysql
     restart: always
     image: mysql:8.0.28
-    volumes:
-      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3307"
     environment:
-      MYSQL_ROOT_PASSWORD: somewordpress
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ""
     env_file:
       - ./server/.env
+    volumes:
+      - mysqldb:/var/lib/mysql
+volumes:
+  mysqldb: {}
 

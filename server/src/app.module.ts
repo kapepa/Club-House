@@ -40,6 +40,10 @@ config();
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
       entities: [User, Room],
+      // entities: [
+      //   __dirname + '/dist/../**/users/user.entity{.ts,.js}',
+      //   __dirname + '/dist/../**/room/room.entyty{.ts,.js}',
+      // ],
       synchronize: true,
     }),
     RoomModule,
