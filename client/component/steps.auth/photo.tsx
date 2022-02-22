@@ -27,7 +27,7 @@ const Photo: FC<IPhoto> = ({callback, avatarImage}) => {
   }
 
   const IamgeReader = (file: File): void => {
-    if (FileReader && (Object.keys(file).length || file)) {
+    if (FileReader && (file.name ?? (typeof file === 'string' && String(file).length))) {
       const fr = new FileReader();
       fr.readAsDataURL(file);
       fr.onload = () => setAvatar(String(fr.result))

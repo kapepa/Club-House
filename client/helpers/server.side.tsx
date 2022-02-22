@@ -4,8 +4,9 @@ import {IRoom} from "../dto/room.dto";
 import {IUser} from "../dto/user.dto";
 
 const ServerSideRequest = (token: string | undefined) => {
+  console.log("api", config.api)
   const Axios = axios.create({
-    baseURL: config.url,
+    baseURL: config.api,
     headers: {['Authorization']: `Bearer ${token}`}
   })
 
