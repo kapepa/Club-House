@@ -1,5 +1,18 @@
 version: "3.9"
 services:
+  nginx:
+    container_name: nginx
+#    image: nginx:1.20.2
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+#    volumes:
+#      - /nginx/nginx.conf
+    ports:
+      - "80:80"
+    links:
+      - nextjs
+      - nestjs
   nextjs:
     container_name: nextjs
     restart: always
@@ -11,7 +24,7 @@ services:
     environment:
       API_URL: "http://nestjs:5000"
     volumes:
-      - ./packages/landingpage:/client/usr/src/app
+      - ./www/client:/client/usr/src/app
       - /client/usr/src/app/node_modules
       - /client/usr/src/app/.next
     env_file:
@@ -28,10 +41,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    env_file:
-      - ./server/.env
     environment:
       MYSQL_HOST: mysql
+    volumes:
+      - ./www/server:/server/usr/src/app
+      - /server/usr/src/app/node_modules
+      - /server/usr/src/app/dist
+      - static:/server/usr/src/app/static
+    env_file:
+      - ./server/.env
     depends_on:
       - mysql
   mysql:
@@ -51,4 +69,5 @@ services:
       - mysqldb:/var/lib/mysql
 volumes:
   mysqldb: {}
+  static: {}
 

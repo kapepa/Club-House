@@ -19,7 +19,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @ApiTags('user')
-@Controller('user')
+@Controller('/api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
