@@ -23,9 +23,8 @@ services:
     environment:
       API_URL: "http://nestjs:5000"
     volumes:
-      - ./www/client:/client/usr/src/app
-      - /client/usr/src/app/node_modules
-      - /client/usr/src/app/.next
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
     env_file:
       - ./client/.env
     depends_on:
@@ -43,10 +42,9 @@ services:
     environment:
       MYSQL_HOST: mysql
     volumes:
-      - ./www/server:/server/usr/src/app
-      - /server/usr/src/app/node_modules
-      - /server/usr/src/app/dist
-      - static:/server/usr/static/
+      - /usr/src/app/node_modules
+      - /usr/src/app/dist
+      - static:/usr/static/
     env_file:
       - ./server/.env
     depends_on:

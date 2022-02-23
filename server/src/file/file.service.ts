@@ -22,8 +22,8 @@ export class FileService {
         throw new HttpException('File is large size', HttpStatus.FORBIDDEN);
       if (!fs.existsSync(staticFolder)) await fs.mkdirSync(staticFolder);
 
-      const fl = fs.writeFileSync(pathName, buffer);
-
+      fs.writeFileSync(pathName, buffer);
+      
       return newName;
     } catch (e: any) {
       throw new HttpException('FileService', HttpStatus.FORBIDDEN);

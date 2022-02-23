@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -16,6 +17,8 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+import { join } from 'path';
 
 @ApiBearerAuth()
 @ApiTags('user')
