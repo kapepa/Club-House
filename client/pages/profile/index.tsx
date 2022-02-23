@@ -10,7 +10,7 @@ import {ProfileServerSideProps} from "../../server.props/profile";
 import {IUser} from "../../dto/user.dto";
 import Input from "../../component/input";
 import Regexp from "../../helpers/regexp";
-import {UpdateAvatar, UpdateUser} from "../../helpers/request";
+import {AvatarUpdate, UpdateUser} from "../../helpers/request";
 
 interface IProfile {
   user: IUser
@@ -69,7 +69,7 @@ const Profile: NextPage<IProfile> = ({user}) => {
   const avatarForm = async (file: File): Promise<{access_token: string}> => {
     const form = new FormData();
     form.append('avatar', file);
-    return UpdateAvatar(form)
+    return AvatarUpdate(form)
   }
 
   const setCookie = (cookie: string) => Cookie.set('token',cookie);

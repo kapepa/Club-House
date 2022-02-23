@@ -4,7 +4,7 @@ import id from "../pages/room/[id]";
 
 export const RegUser = async (form: any) => {
   try {
-    const user = await Axios.post('/auth/registration', form ).then((res) => res.data);
+    const user = await Axios.post('/api/auth/registration', form ).then((res) => res.data);
     return user;
   } catch (e: any){
     throw e.name
@@ -38,7 +38,7 @@ export const UpdateUser = async (data: {filed: string, value: string | File | un
   }
 }
 
-export const UpdateAvatar = async (form: any) => {
+export const AvatarUpdate = async (form: any) => {
   try {
     const user = await Axios.post('/api/user/avatar', form).then(res => res.data);
     return user;

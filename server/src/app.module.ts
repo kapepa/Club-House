@@ -17,7 +17,7 @@ config();
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '/static'),
+      rootPath: join(__dirname, '..',  '/static'),
     }),
     MailerModule.forRootAsync({
       useFactory: () => ({
@@ -39,11 +39,11 @@ config();
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
-      entities: [User, Room],
-      // entities: [
-      //   __dirname + '/dist/../**/users/user.entity{.ts,.js}',
-      //   __dirname + '/dist/../**/room/room.entyty{.ts,.js}',
-      // ],
+      // entities: [User, Room],
+      entities: [
+        __dirname + '/dist/../**/users/user.entity{.ts,.js}',
+        __dirname + '/dist/../**/room/room.entyty{.ts,.js}',
+      ],
       synchronize: true,
     }),
     RoomModule,

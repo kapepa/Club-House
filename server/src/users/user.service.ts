@@ -80,10 +80,11 @@ export class UserService {
     return token;
   }
 
-  async UpdateAvatar(
+  async AvatarUpdate(
     id,
     image: Express.Multer.File,
   ): Promise<{ access_token: string }> {
+    console.log()
     const user = await this.One('id', id);
     if (user.avatar !== '') await this.fileService.DelFile(user.avatar);
     const avatar = await this.fileService.LoadFile(image);
