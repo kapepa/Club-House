@@ -80,12 +80,12 @@ export class UserController {
     type: UserDto,
   })
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
-  async UpdateAvatar(
+  async AvatarUpdate(
     @Req() req,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<{ access_token: string }> {
     const file = JSON.parse(JSON.stringify(files));
-    const update = await this.userService.UpdateAvatar(
+    const update = await this.userService.AvatarUpdate(
       req.user.userId,
       file.avatar[0],
     );
