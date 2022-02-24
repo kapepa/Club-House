@@ -85,7 +85,6 @@ export class UserService {
     image: Express.Multer.File,
   ): Promise<{ access_token: string }> {
     const user = await this.One('id', id);
-
     if (user.avatar !== '') await this.fileService.DelFile(user.avatar);
     const avatar = await this.fileService.LoadFile(image);
     const update = await this.Update('id', { ...user, avatar: avatar });

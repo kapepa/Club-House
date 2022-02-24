@@ -44,7 +44,7 @@ services:
     volumes:
       - /usr/src/app/node_modules
       - /usr/src/app/dist
-      - static:/usr/static/
+      - static:/usr/src/app/static
     env_file:
       - ./server/.env
     depends_on:
@@ -55,7 +55,7 @@ services:
     restart: always
     image: mysql:8.0.28
     ports:
-      - "3307:3307"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DB}

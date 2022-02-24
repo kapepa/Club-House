@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { join } from 'path';
+import { join, basename, resolve } from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import * as sharp from 'sharp';
@@ -12,7 +12,7 @@ export class FileService {
       const uuidName = uuidv4();
       const extention = file.originalname.split('.').pop();
       const newName = `${uuidName}.${extention}`;
-      const pathName = `${staticFolder}\\${uuidName}.${extention}`;
+      const pathName = `${staticFolder}/${uuidName}.${extention}`;
       const buffer = await sharp(Buffer.from(file.buffer))
         .resize(320, 320)
         .png()
@@ -23,12 +23,12 @@ export class FileService {
       if (!fs.existsSync(staticFolder)) await fs.mkdirSync(staticFolder);
 
       fs.writeFileSync(pathName, buffer);
-      
+
       return newName;
     } catch (e: any) {
       throw new HttpException('FileService', HttpStatus.FORBIDDEN);
     }
-  }
+  };
 
   async DelFile(nameFile: string): Promise<boolean> {
     try {
@@ -42,5 +42,5 @@ export class FileService {
     } catch (e: any) {
       throw new HttpException('DelFile', HttpStatus.FORBIDDEN);
     }
-  }
-}
+  };
+};
