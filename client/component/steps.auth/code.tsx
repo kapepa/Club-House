@@ -65,7 +65,7 @@ const Code: FC<ICode> = ({callback}) => {
           className={style.steps__input_number}
           placeholder="_"
           onChange={ChangeField}
-          value={code.one ? code.one : ''}
+          value={code.one || code.one === 0 ? code.one : ''}
           ref={oneRef}
         />
         <input
@@ -74,7 +74,7 @@ const Code: FC<ICode> = ({callback}) => {
           className={style.steps__input_number}
           placeholder="_"
           onChange={ChangeField}
-          value={code.two ? code.two : ''}
+          value={code.two || code.two === 0 ? code.two : ''}
           ref={twoRef}
         />
         <input
@@ -83,7 +83,7 @@ const Code: FC<ICode> = ({callback}) => {
           className={style.steps__input_number}
           placeholder="_"
           onChange={ChangeField}
-          value={code.three ? code.three : ''}
+          value={code.three || code.three === 0 ? code.three : ''}
           ref={threeRef}
         />
         <input
@@ -92,7 +92,7 @@ const Code: FC<ICode> = ({callback}) => {
           className={style.steps__input_number}
           placeholder="_"
           onChange={ChangeField}
-          value={code.four ? code.four : ''}
+          value={code.four || code.four === 0 ? code.four : ''}
           ref={fourRef}
         />
       </div>
