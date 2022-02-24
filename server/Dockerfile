@@ -8,7 +8,7 @@ RUN npm install
 RUN npm run build
 
 COPY . .
-#COPY /usr/src/app/dist ./dist
+# COPY ./dist /usr/src/app/dist 
 
 EXPOSE 5000
 

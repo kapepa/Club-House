@@ -17,7 +17,7 @@ config();
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..',  '/static'),
+      rootPath: join(__dirname, '..', '/static'),
     }),
     MailerModule.forRootAsync({
       useFactory: () => ({
