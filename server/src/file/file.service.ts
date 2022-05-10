@@ -21,14 +21,14 @@ export class FileService {
       if (file.size > 50000)
         throw new HttpException('File is large size', HttpStatus.FORBIDDEN);
       if (!fs.existsSync(staticFolder)) await fs.mkdirSync(staticFolder);
-
+      console.log(Buffer.from(file.buffer));
       fs.writeFileSync(pathName, buffer);
 
       return newName;
     } catch (e: any) {
       throw new HttpException('FileService', HttpStatus.FORBIDDEN);
     }
-  };
+  }
 
   async DelFile(nameFile: string): Promise<boolean> {
     try {
@@ -42,5 +42,5 @@ export class FileService {
     } catch (e: any) {
       throw new HttpException('DelFile', HttpStatus.FORBIDDEN);
     }
-  };
-};
+  }
+}
